@@ -3,7 +3,7 @@ from .forms import UserRegistrationForm
 from django.contrib import messages
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login as auth_login
 from django.contrib.auth.forms import AuthenticationForm 
 import os
 from dotenv import load_dotenv
@@ -12,13 +12,13 @@ def home(request):
     return render(request,'index.html',{'title':'home'})
 def Login(request):
     if request.method=='POST':
-        form=AuthenticationForm(request,data=request.POST)
+        form=AuthenticationForm(data=request.POST)
         if form.is_valid():
             username=form.cleaned_data.get('username')
             password=form.cleaned_data.get('password')
             user=authenticate(request,username=username,password=password)
             if user is not None:
-                login(request,user)
+                auth_login(request,user)
                 messages.success(request,f'welcome {username}')
                 return redirect('home')
             else:

@@ -49,9 +49,9 @@
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endfor %}
-<h1>INDEX PAGE LOADED</h1>
+
 <!-- Welcome message for new user -->
-{% if request.user.is_authenticated %}
+{% if user.is_authenticated %}
     <h2>Welcome {{user.username}}!!</h2>
 {% endif %}
 </body>

@@ -9,13 +9,11 @@
     <title>{{title}}</title>
 </head>
 <body>
-    {% block start %}
-    <form method="post" action="{% url 'home' %}">
+    <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-outline-primary">Login</button>
         <p>Do not have an account? Please <a href="/register">Signup</a></p>
     </form> 
-    {% endblock start %}
 </body>
 </html>
