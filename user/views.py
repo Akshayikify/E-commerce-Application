@@ -39,7 +39,8 @@ def register(request):
             d={'username':username}
             subject,from_email,to='welcome',os.getenv('EMAIL_HOST_USER'),email
             html_content=html_temp.render(d)
-            msg=EmailMultiAlternatives(subject,html_content,from_email,[to])
+            msg=EmailMultiAlternatives(subject,'Please view this email in an HTML-supported client.',from_email,[to])
+            msg.attach_alternative(html_content, "text/html")
             msg.send()
             messages.success(request,f'Your account has been successfully created! You can login now!')
             return redirect('login')
