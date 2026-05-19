@@ -31,9 +31,11 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'crispy_bootstrap5',
     'user',
-    'Orders',
-    'products',
-    'category',
+    'cart',
+    'product',
+    'orderitems',
+    'order',
+    'category'
 ]
 
 MIDDLEWARE = [
