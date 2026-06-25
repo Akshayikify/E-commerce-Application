@@ -1,5 +1,6 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import User
 
 class Category(models.Model):
     name=models.CharField(max_length=200)
@@ -12,14 +13,13 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 class Customer(models.Model):
-    first_name=models.CharField(max_length=50)
-    last_name=models.CharField(max_length=50)
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
     email=models.EmailField()
     phone=PhoneNumberField(unique=True,region='IN')
     address=models.TextField()
     
     def __str__(self):
-        return self.first_name
+        return self.user.username
 class Order(models.Model):
     products=models.ForeignKey(Product,on_delete=models.CASCADE)
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE)
