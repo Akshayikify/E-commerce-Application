@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store',
     'phonenumber_field',
-    'django_extensions'
+    'django_extensions',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
