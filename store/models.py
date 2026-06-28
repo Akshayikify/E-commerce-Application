@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     name=models.CharField(max_length=200)
+    def __str__(self):
+        return self.name
 class Product(models.Model):
     title=models.CharField(max_length=120)
     product_image=models.ImageField(upload_to='products/',null=True)

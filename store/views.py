@@ -3,7 +3,7 @@ from .forms import RegistrationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
-from .models import Customer
+from .models import Customer,Product
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -41,4 +41,5 @@ def logout_view(request):
     return redirect('home')
 
 def home(request):
-    return render(request,"home.html")
+    products=Product.objects.all()
+    return render(request,"home.html",{'products':products})
