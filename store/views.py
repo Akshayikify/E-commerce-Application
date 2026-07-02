@@ -1,8 +1,9 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .forms import RegistrationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
+from translate import Translator
 from .models import Customer,Product
 def register(request):
     if request.method=='POST':
@@ -43,3 +44,14 @@ def logout_view(request):
 def home(request):
     products=Product.objects.all()
     return render(request,"home.html",{'products':products})
+
+def product_detail(request,pk):
+    product=get_object_or_404(Product,id=pk)
+    language='kn'
+    translator=Translator(to_lang=language)
+    try:
+        translation=translator.translate(product.title)
+    except:
+        translation=product.title
+    return render(request,'product.html',{'product':product,'translation':translation})
+    
