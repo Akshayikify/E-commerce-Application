@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
 from translate import Translator
-from .models import Customer,Product
+from django.views.decorators.http import require_POST
+from .models import Customer,Product,Cart,CartItem
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -42,7 +45,7 @@ def logout_view(request):
     return redirect('home')
 
 def home(request):
-    products=Product.objects.all()
+    products=Product.objects.only('product_image','title','price')
     return render(request,"home.html",{'products':products})
 
 def product_detail(request,pk):
@@ -55,3 +58,43 @@ def product_detail(request,pk):
         translation=product.title
     return render(request,'product.html',{'product':product,'translation':translation})
     
+@login_required
+@require_POST
+def add_to_cart(request,product_id):
+    product=get_object_or_404(Product,pk=product_id)
+    profile,_=Customer.get_or_create(user=request.user)
+    cart,_=Cart.objects.get_or_create(customer=profile)
+    
+    try:
+        quantity=int(request.POST.get('quantity',1))
+        if quantity<1:
+            quantity=1
+    except ValueError:
+        quantity=1
+    
+    cart_item,created=CartItem.get_or_create(
+        product=product,
+        cart=cart,
+        quantity=quantity
+    )
+    
+    if not created:
+        cart_item.quantity+=quantity
+        cart_item.save()
+        messages.success(f"Updated quantity for {product.title}")
+    else:
+        messages.success(f"{product.title} is added to your cart.")
+    
+    return redirect('cart_detail')
+        
+@login_required
+def cart_detail(request):
+    profile,_=Customer.get_or_create(user=request.user)
+    cart,_=Cart.objects.get_or_create(customer=profile)
+    return render(request,'cart.html',{'cart': cart})
+
+@login_required
+def remove_cart_item(request,pk):
+    cart_item=get_object_or_404(CartItem,id=pk,cart__customer__user=request.user)
+    cart_item.delete()
+    return redirect('cart_detail')

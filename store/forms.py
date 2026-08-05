@@ -26,5 +26,3 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError("Password doesn't match")
         return cleaned
 
-class LoginForm(AuthenticationForm):
-    pass   
