@@ -43,13 +43,12 @@ class Order(models.Model):
         CANCELED='CL','canceled'
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='orders')
     shipping_address=models.TextField()
-    created_at=models.DateTimeField(default=datetime.now())
+    created_at=models.DateTimeField(auto_now_add=True)
     phone=PhoneNumberField(region='IN')
     status=models.CharField(max_length=3,choices=Order_Status.choices,default=Order_Status.PENDING)
-    @property
     
     def __str__(self):
-        return f"Order #id {self.id}- {self.customer.username}"
+        return f"Order #id {self.id}- {self.customer.user.username}"
 
 class OrderItem(models.Model):
     """ It stores the ordered items,thier quantities and prices extending the order model """
@@ -68,18 +67,24 @@ class Rating(models.Model):
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='ratings')
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     rating=models.PositiveSmallIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
+    class Meta:
+        unique_together=('customer','product')
 class Cart(models.Model):
-    customer=models.ForeignKey(User,on_delete=models.CASCADE,related_name='cart')
-    created_at=models.DateTimeField(default=datetime.now())
+    customer=models.OneToOneField(Customer,on_delete=models.CASCADE,related_name='cart')
+    created_at=models.DateTimeField(auto_now_add=True)
     
+    @property
+    def total_price(self):
+        return sum(item.total_price for item in self.items.all())
     def __str__(self):
-        return f"{self.customer.username} is connected to cart"
+        return f"{self.customer.user.username} is connected to cart"
 
 class CartItem(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
-    cart=models.ForeignKey(Cart,on_delete=models.CASCADE)
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='items')
     quantity=models.PositiveIntegerField(default=1)
-    
+    class Meta:
+        unique_together=('cart','product')
     @property
     def total_price(self):
         return self.product.price*self.quantity

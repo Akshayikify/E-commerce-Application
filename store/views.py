@@ -16,13 +16,14 @@ def register(request):
                 username=form.cleaned_data['username'],
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name']
+                # first_name=form.cleaned_data['first_name'],
+                # last_name=form.cleaned_data['last_name']
             )
             Customer.objects.create(
                 user=user,
                 phone=form.cleaned_data['phone'],
                 address=form.cleaned_data['address'],
+                email=form.cleaned_data['email']
             )
             return redirect("login")
     else:
@@ -60,9 +61,9 @@ def product_detail(request,pk):
     
 @login_required
 @require_POST
-def add_to_cart(request,product_id):
-    product=get_object_or_404(Product,pk=product_id)
-    profile,_=Customer.get_or_create(user=request.user)
+def add_to_cart(request,pk):
+    product=get_object_or_404(Product,pk=pk)
+    profile=request.user.customer
     cart,_=Cart.objects.get_or_create(customer=profile)
     
     try:
@@ -72,29 +73,31 @@ def add_to_cart(request,product_id):
     except ValueError:
         quantity=1
     
-    cart_item,created=CartItem.get_or_create(
+    cart_item,created=CartItem.objects.get_or_create(
         product=product,
         cart=cart,
-        quantity=quantity
+        defaults={
+            'quantity': quantity
+        }
     )
     
     if not created:
         cart_item.quantity+=quantity
         cart_item.save()
-        messages.success(f"Updated quantity for {product.title}")
+        messages.success(request,f"Updated quantity for {product.title}")
     else:
-        messages.success(f"{product.title} is added to your cart.")
+        messages.success(request,f"{product.title} is added to your cart.")
     
-    return redirect('cart_detail')
+    return redirect('cart')
         
 @login_required
 def cart_detail(request):
-    profile,_=Customer.get_or_create(user=request.user)
-    cart,_=Cart.objects.get_or_create(customer=profile)
+    cart=Cart.objects.filter(customer=request.user.customer).prefetch_related('items__product').first()
     return render(request,'cart.html',{'cart': cart})
 
 @login_required
 def remove_cart_item(request,pk):
     cart_item=get_object_or_404(CartItem,id=pk,cart__customer__user=request.user)
     cart_item.delete()
-    return redirect('cart_detail')
+    messages.success(request,f"{cart_item.product.title} is removed from cart")
+    return redirect('cart')
