@@ -1,36 +1,107 @@
 {% extends 'home.html' %}
 
 {% block products %}
+<div class="container py-4">
+    <!-- Flash Messages -->
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>{{ message }}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endif %}
-    <h1>Your Cart</h1>
-    {% if cart %}
-    <table>
-        <tr>
-            <th>Product</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total Price</th>
-        </tr>
-        {% for item in cart.items.all %}
-        <tr>
-            <td>{{ item.product.title }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.product.price }}</td>
-            <td>{{ item.total_price }}</td>
-            <td><a href="{% url 'remove_cart_item' item.id %}"><i class="fa-solid fa-trash-can"></i></a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <h3>Grand Total:</h3>
-    <p>₹ {{ cart.total_price}}</p>
+
+    <h2 class="fw-bold mb-4">Shopping Cart</h2>
+
+    {% if cart and cart.items.all %}
+        <div class="row g-4">
+            <!-- Left Column: Item List -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush rounded-3">
+                            {% for item in cart.items.all %}
+                                <li class="list-group-item p-3">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                        
+                                        <!-- Product Image & Details -->
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" class="rounded img-fluid" style="width: 70px; height: 70px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 70px; height: 70px;">
+                                                    <i class="bi bi-image fs-4"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1 fw-semibold">{{ item.product.title }}</h6>
+                                                <small class="text-muted">Unit Price: ${{ item.product.price }}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity & Actions -->
+                                        <div class="d-flex align-items-center gap-4">
+                                            <span class="badge bg-light text-dark border px-3 py-2 fw-normal">
+                                                Qty: <strong>{{ item.quantity }}</strong>
+                                            </span>
+                                            
+                                            <a href="{% url 'remove_cart_item' item.id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Remove item">
+                                                <i class="bi bi-trash me-1"></i> Remove
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Order Summary</h5>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Items count</span>
+                            <span>{{ cart.items.count }}</span>
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fs-5 fw-bold">Grand Total</span>
+                            <span class="fs-4 fw-bold text-primary">${{ cart.total_price }}</span>
+                        </div>
+
+                        <a href="#" class="btn btn-primary btn-lg w-100 fw-bold mb-2 shadow-sm">
+                            Proceed to Checkout
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-link w-100 text-decoration-none text-muted small">
+                            ← Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     {% else %}
-    <p>Your cart is empty</p>
+        <!-- Empty State Design -->
+        <div class="card border-0 shadow-sm rounded-3 text-center py-5">
+            <div class="card-body">
+                <div class="mb-3 text-muted display-4">
+                    <i class="bi bi-cart-x"></i>
+                </div>
+                <h4 class="fw-bold">Your cart is empty</h4>
+                <p class="text-muted mb-4">Looks like you haven't added anything to your cart yet.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold">
+                    Explore Products
+                </a>
+            </div>
+        </div>
     {% endif %}
+</div>
 {% endblock %}

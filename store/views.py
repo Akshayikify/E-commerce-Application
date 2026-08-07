@@ -51,12 +51,7 @@ def home(request):
 
 def product_detail(request,pk):
     product=get_object_or_404(Product,id=pk)
-    language='kn'
-    translator=Translator(to_lang=language)
-    try:
-        translation=translator.translate(product.title)
-    except:
-        translation=product.title
+    translation=product.title_kn or product.title
     return render(request,'product.html',{'product':product,'translation':translation})
     
 @login_required
@@ -101,3 +96,7 @@ def remove_cart_item(request,pk):
     cart_item.delete()
     messages.success(request,f"{cart_item.product.title} is removed from cart")
     return redirect('cart')
+@login_required
+def customer_profile(request,customer_id):
+    customer=Customer.objects.get(pk=customer_id)
+    return render(request,'customer.html',{'customer': customer})
