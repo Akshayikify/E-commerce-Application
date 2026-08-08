@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,12 +28,14 @@
         .product-card:hover {
             transform: translateY(-4px);
         }
+        a{
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm justify-content-between">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="{% url 'home' %}">
                 <i class="bi bi-bag-heart-fill me-2"></i>E-Commerce
@@ -59,9 +62,13 @@
                     
                     {% if user.is_authenticated %} 
                         <span class="navbar-text me-2 text-light small">
-                            <a href="#"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</a>
+                            <a href="{% url 'profile' user.customer.id %}"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</a>
                         </span>
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+                          <form class="form-inline my-2 my-lg-0 d-flex gap-2" method="get" action="{% url 'home' %}">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Search Products" aria-label="Search Products" name="?" value="{{ query }}">
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                          </form>
                     {% else %}
                         <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">Login</a>
                         <a href="{% url 'register' %}" class="btn btn-primary btn-sm rounded-pill px-3">Sign Up</a>
@@ -74,10 +81,18 @@
     <!-- Main Content Area -->
     <main class="container py-4">
         {% block products %}
+        <!-- messages -->
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold m-0">Featured Products</h2>
             </div>
-
             {% if products %}
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                     {% for product in products %}
@@ -113,6 +128,9 @@
                 <div class="text-center py-5 text-muted">
                     <i class="bi bi-box-seam display-4 mb-3 d-block"></i>
                     <h4>No products available</h4>
+                    <a href="{% url 'home' %}" class="btn btn-link">
+                            ← Try Another way
+                   </a>
                 </div>
             {% endif %}
         {% endblock %}

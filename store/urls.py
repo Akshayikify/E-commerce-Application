@@ -8,5 +8,6 @@ urlpatterns=[
     path('cart/',views.cart_detail,name='cart'),# URL path for cart page
     path('cart/add/<int:pk>/',views.add_to_cart,name='add_to_cart'), #URL path for add to cart
     path('cart/remove/<int:pk>/',views.remove_cart_item,name='remove_cart_item'), # URL path for remove items from cart
-    path('customer/<int:customer_id>/',views.customer_profile,name='profile') #URL path for customer profile
+    path('customer/<int:customer_id>/',views.customer_profile,name='profile'), #URL path for customer profile
+    path('login',views.login_view,name='login'), # URL path for logout page
 ]

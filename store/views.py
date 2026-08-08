@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 from .models import Customer,Product,Cart,CartItem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -46,8 +47,19 @@ def logout_view(request):
     return redirect('home')
 
 def home(request):
-    products=Product.objects.only('product_image','title','price')
-    return render(request,"home.html",{'products':products})
+    query=request.GET.get('?',"").strip()
+    products=Product.objects.only('id','product_image','title','price')
+    if query:
+        products=Product.objects.filter(
+            Q(title__icontains=query)|
+            Q(description__icontains=query)|
+            Q(category__name__icontains=query)
+        ).distinct()
+        if products.exists():
+            messages.success(request,"Product found successfully")
+        else:
+            messages.warning(request,'No product found')
+    return render(request,"home.html",{'products':products,'query': query})
 
 def product_detail(request,pk):
     product=get_object_or_404(Product,id=pk)
