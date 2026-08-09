@@ -9,6 +9,7 @@ from .models import Customer,Product,Cart,CartItem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -49,6 +50,7 @@ def logout_view(request):
 def home(request):
     query=request.GET.get('?',"").strip()
     products=Product.objects.only('id','product_image','title','price')
+    cart_item_count=CartItem.objects.count()
     if query:
         products=Product.objects.filter(
             Q(title__icontains=query)|
@@ -59,7 +61,10 @@ def home(request):
             messages.success(request,"Product found successfully")
         else:
             messages.warning(request,'No product found')
-    return render(request,"home.html",{'products':products,'query': query})
+    paginator=Paginator(products,4)
+    page_no=request.GET.get('page')
+    page_obj=paginator.get_page(page_no)
+    return render(request,"home.html",{'products':page_obj,'query': query,'cart_item_count':cart_item_count,'page_obj': page_obj})
 
 def product_detail(request,pk):
     product=get_object_or_404(Product,id=pk)
