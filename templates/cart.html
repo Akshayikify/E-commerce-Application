@@ -1,5 +1,4 @@
 {% extends 'home.html' %}
-
 {% block products %}
 <div class="container py-4">
     <!-- Flash Messages -->
@@ -42,10 +41,17 @@
 
                                         <!-- Quantity & Actions -->
                                         <div class="d-flex align-items-center gap-4">
+                                           <form action="{% url 'update_quantity' item.id %}" method="POST" class="mt-3">
+                                                        {% csrf_token %}
+                                                            <div class="d-flex align-items-center gap-2 mb-3">
+                                                        <label for="quantity" class="form-label mb-0">Quantity:</label>
+                                            <input type="number" id="quantity" name="quantity" value="0" min="0" class="form-control" style="width: 80px;">
+                                                </div>
+                                         <button type="submit" class="btn btn-primary">Update quantity</button>
+                                          </form>
                                             <span class="badge bg-light text-dark border px-3 py-2 fw-normal">
                                                 Qty: <strong>{{ item.quantity }}</strong>
                                             </span>
-                                            
                                             <a href="{% url 'remove_cart_item' item.id %}" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Remove item">
                                                 <i class="bi bi-trash me-1"></i> Remove
                                             </a>

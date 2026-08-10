@@ -101,12 +101,27 @@ def add_to_cart(request,pk):
         messages.success(request,f"{product.title} is added to your cart.")
     
     return redirect('cart')
-        
+
 @login_required
 def cart_detail(request):
     cart=Cart.objects.filter(customer=request.user.customer).prefetch_related('items__product').first()
     return render(request,'cart.html',{'cart': cart})
-
+@login_required
+def update_quantity(request,pk):
+    cart_item=CartItem.objects.get(pk=pk)
+    try:
+        quantity=int(request.POST.get('quantity',1))
+    except ValueError:
+        quantity=1
+    
+    if quantity<=0:
+        cart_item.delete()
+        messages.success(request,f"{cart_item.product.title} was removed successfully!")
+    else:
+        cart_item.quantity=quantity
+        cart_item.save()
+        messages.success(request,"Cart quantity updated")
+    return redirect('cart')
 @login_required
 def remove_cart_item(request,pk):
     cart_item=get_object_or_404(CartItem,id=pk,cart__customer__user=request.user)
