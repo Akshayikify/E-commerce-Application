@@ -10,5 +10,5 @@ urlpatterns=[
     path('cart/remove/<int:pk>/',views.remove_cart_item,name='remove_cart_item'), # URL path for remove items from cart
     path('customer/<int:customer_id>/',views.customer_profile,name='profile'), #URL path for customer profile
     path('login',views.login_view,name='login'), # URL path for logout page
-    path('update_quantity/<int:pk>/',views.update_quantity,name='update_quantity') #URL path to update quantity
+    path('update_quantity/<int:pk>/',views.update_quantity,name='update_quantity'),#URL path to update quantity
 ]

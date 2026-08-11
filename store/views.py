@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
 from translate import Translator
 from django.views.decorators.http import require_POST
-from .models import Customer,Product,Cart,CartItem
+from .models import Customer,Product,Cart,CartItem,Category
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -48,8 +48,12 @@ def logout_view(request):
     return redirect('home')
 
 def home(request):
-    query=request.GET.get('?',"").strip()
+    query=request.GET.get('q',"").strip()
+    category_id=request.GET.get('category','').strip()
     products=Product.objects.only('id','product_image','title','price')
+    categories=Category.objects.all()
+    if category_id:
+        products=Product.objects.filter(category_id=category_id)
     cart_item_count=CartItem.objects.count()
     if query:
         products=Product.objects.filter(
@@ -64,7 +68,15 @@ def home(request):
     paginator=Paginator(products,4)
     page_no=request.GET.get('page')
     page_obj=paginator.get_page(page_no)
-    return render(request,"home.html",{'products':page_obj,'query': query,'cart_item_count':cart_item_count,'page_obj': page_obj})
+    context={
+        'products':page_obj,
+        'query': query,
+        'cart_item_count':cart_item_count,
+        'page_obj': page_obj,
+        'categories':categories,
+        'selected_category': category_id
+        }
+    return render(request,"home.html",context)
 
 def product_detail(request,pk):
     product=get_object_or_404(Product,id=pk)

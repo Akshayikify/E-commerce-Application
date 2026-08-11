@@ -21,7 +21,7 @@ class Product(models.Model):
     product_image=models.ImageField(upload_to='products/',null=True)
     description=models.TextField()
     price=models.DecimalField(decimal_places=2,max_digits=7,default=45.78)
-    category=models.ForeignKey(Category,on_delete=models.CASCADE)
+    category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name='categories')
     title_kn=models.CharField(max_length=255,blank=True,null=True)
     def save(self,*args,**kwargs):
         if not self.title_kn and self.title:

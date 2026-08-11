@@ -51,9 +51,20 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
+                    <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item {% if not selected_category %} active {% endif %}" href="{% url 'home' %}">All Categories</a>
+                            </li>
+                            
+                            {% for category in categories %}
+                            <li><a class="dropdown-item {% if selected_category == category.id|stringformat:'s' %} active {% endif %}" href="{% url 'home' %}?category={{ category.id }}" type="submit" name="category">{{ category }}</a></li>
+                            {% endfor %}
+                          </ul>
+                        </li>
                 </ul>
                 
                 <div class="d-flex align-items-center gap-2">
@@ -68,7 +79,7 @@
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
                           <form class="form-inline my-2 my-lg-0 d-flex gap-2" method="get" action="{% url 'home' %}">
                             {% csrf_token %}
-                            <input class="form-control mr-sm-2" type="search" placeholder="Search Products" aria-label="Search Products" name="?" value="{{ query }}">
+                            <input class="form-control mr-sm-2" type="search" placeholder="Search Products" aria-label="Search Products" name="q" value="{{ query }}">
                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                           </form>
                     {% else %}
