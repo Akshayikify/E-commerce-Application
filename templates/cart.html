@@ -83,7 +83,7 @@
                             <span class="fs-4 fw-bold text-primary">₹ {{ cart.total_price }}</span>
                         </div>
 
-                        <a href="#" class="btn btn-primary btn-lg w-100 fw-bold mb-2 shadow-sm">
+                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg w-100 fw-bold mb-2 shadow-sm">
                             Proceed to Checkout
                         </a>
                         <a href="{% url 'home' %}" class="btn btn-link w-100 text-decoration-none text-muted small">

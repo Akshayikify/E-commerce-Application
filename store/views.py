@@ -54,7 +54,8 @@ def home(request):
     categories=Category.objects.all()
     if category_id:
         products=Product.objects.filter(category_id=category_id)
-    cart_item_count=CartItem.objects.count()
+    profile=request.user.customer
+    cart_item_count=CartItem.objects.filter(cart__customer=profile).count()
     if query:
         products=Product.objects.filter(
             Q(title__icontains=query)|
@@ -144,3 +145,9 @@ def remove_cart_item(request,pk):
 def customer_profile(request,customer_id):
     customer=Customer.objects.get(pk=customer_id)
     return render(request,'customer.html',{'customer': customer})
+
+@login_required
+def checkout(request): 
+    cart=Cart.objects.filter(customer=request.user.customer).prefetch_related('items__product').first()
+    return render(request,'checkout.html',{'cart': cart})    
+    

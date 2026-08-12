@@ -94,11 +94,18 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     """ There is a one many to relationship with cart and product and gets the quantity through POST request stores in 'quantity' attribure. """
-    product=models.OneToOneField(Product,on_delete=models.CASCADE)
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name='items')
     quantity=models.PositiveIntegerField(default=1)
+
     class Meta:
-        unique_together=('cart','product')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['cart', 'product'],
+                name='unique_product_per_cart',
+            )
+        ]
+    
     @property
     def total_price(self):
         return self.product.price*self.quantity

@@ -1,0 +1,117 @@
+{% extends 'home.html' %}
+
+{% block products %}
+<div class="container py-4 d-flex justify-content-center">
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <!-- Displaying form for getting billing address -->
+     <div class="col-lg-8">
+            <!-- Title Billing details -->
+     <h2 class="fw-bold mb-4">Billing Details</h2>
+        <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body">
+            <form action="">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="first_name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" placeholder="First name" name="first_name" id="first_name">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="last_name" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" placeholder="Last name" name="last_name" id="last_name">
+                  </div>
+                  <!-- 2nd row -->
+                  <div class="row g-3">
+                  <div class="col-md-12">
+                    <label for="address" class="form-label">Permanent Address</label>
+                    <input type="text" class="form-control" placeholder="Enter Address" name="address" id="permanent_address">
+                  </div>
+                  <!-- 3rd row -->
+                   <div class="row g-3">
+                  <div class="col-md-6">
+                        <label for="inputState" class="form-label">State</label>
+                        <select id="inputState" class="form-select">
+                          <option value="Karnataka">Karnataka</option>
+                          <option value="Hyderbad">Hyderbad</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="inputState" class="form-label">Country</label>
+                        <select id="inputState" class="form-select">
+                          <option value="Karnataka">India</option>
+                          <option value="Hyderbad">America</option>
+                        </select>
+                      </div>
+                </div>
+                <!-- 4th row  -->
+                 <div class="row g-3">
+                    <div class="col-md-12">
+                        <label for="inputCity" class="form-label">City</label>
+                        <input type="text" class="form-control" id="inputCity" placeholder="Enter a your city here">
+                      </div>
+                 </div>
+            </form>
+
+        </div>
+        </div>
+     </div>
+
+     <!-- Display the order summary on right side -->
+     <div class="col-lg-12">
+        <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Order Summary</h5>
+                        
+                        {% if cart and cart.items.all %}
+             <div class="row g-4">
+            <!-- Left Column: Item List -->
+                <div class="col-lg-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush rounded-3">
+                            {% for item in cart.items.all %}
+                                <li class="list-group-item p-3">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                        
+                                        <!-- Product Image & Details -->
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.product.product_image %}
+                                                <img src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" class="rounded img-fluid" style="width: 70px; height: 70px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 70px; height: 70px;">
+                                                    <i class="bi bi-image fs-4"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1 fw-semibold">{{ item.product.title }}</h6>
+                                                <small class="text-muted">Unit Price: ₹ {{ item.product.price }}</small>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endif %}
+                        
+                        <hr class="my-3">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="fs-5 fw-bold">Grand Total: </span>
+                            <span class="fs-4 fw-bold text-primary">₹ {{ cart.total_price }}</span>
+                        </div>
+
+                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg w-100 fw-bold mb-2 shadow-sm">
+                            Proceed to Pay
+                        </a>
+                        <a href="{% url 'home' %}" class="btn btn-link w-100 text-decoration-none text-muted small">
+                            ← Continue Shopping
+                        </a>
+                    </div>
+            </div>
+     
+     </div>
+
+{% endblock %}
