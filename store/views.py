@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
 from translate import Translator
 from django.views.decorators.http import require_POST
-from .models import Customer,Product,Cart,CartItem,Category
+from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -50,12 +50,17 @@ def logout_view(request):
 def home(request):
     query=request.GET.get('q',"").strip()
     category_id=request.GET.get('category','').strip()
-    products=Product.objects.only('id','product_image','title','price')
+    products=Product.objects.only('id','product_image','title','price').order_by('id')
     categories=Category.objects.all()
     if category_id:
         products=Product.objects.filter(category_id=category_id)
-    profile=request.user.customer
-    cart_item_count=CartItem.objects.filter(cart__customer=profile).count()
+    cart_item_count=0
+    if request.user.is_authenticated:
+        try:
+            profile=request.user.customer
+            cart_item_count=CartItem.objects.filter(cart__customer=profile).count()
+        except Exception:
+            profile=None
     if query:
         products=Product.objects.filter(
             Q(title__icontains=query)|
@@ -146,8 +151,36 @@ def customer_profile(request,customer_id):
     customer=Customer.objects.get(pk=customer_id)
     return render(request,'customer.html',{'customer': customer})
 
-@login_required
+@login_required(login_url='login')
 def checkout(request): 
-    cart=Cart.objects.filter(customer=request.user.customer).prefetch_related('items__product').first()
-    return render(request,'checkout.html',{'cart': cart})    
+    customer=get_object_or_404(
+        Customer,
+        user=request.user
+    )
+    cart=Cart.objects.filter(customer=customer).prefetch_related('items__product').first()
+    cart_items=CartItem.objects.select_related('product')
+    total_price=sum(item.total_price for item in cart_items)
+    if request.method=='POST':
+        shipping_address=request.POST.get('address')
+        phone=request.POST.get('phone')
+        order=Order.objects.create(
+            customer=customer,
+            shipping_address=shipping_address,
+            phone=phone
+        )
+        
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+            
+        return redirect('payment',order_id=order.id)
+    
+    return render(request,'checkout.html',
+                  {'cart_items': cart_items,
+                   'total_price': total_price,
+                   })    
     
