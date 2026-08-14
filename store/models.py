@@ -5,6 +5,8 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 from datetime import datetime
 from translate import Translator
 import uuid
+
+from django.conf import settings
 class Category(models.Model):
     """
     This class stores the all the categories of product like Home appliances , Electronics ,.etc. 
@@ -117,18 +119,18 @@ class Payment(models.Model):
         CREATED='CREATED','Created'
         SUCCESS='SUCCESS','Success'
         FAILED='FAILED','Failed'
-    payment_id=models.CharField(
+    razorpay_payment_id =models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
-    orderid=models.CharField(
+    razorpay_order_id=models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
-    signature=models.CharField(max_length=200,blank=True,null=True)
-    order=models.OneToOneField(Order,on_delete=models.CASCADE,related_name='payment')
+    razorpay_signature=models.CharField(max_length=200,blank=True,null=True)
+    order=models.ForeignKey(Order,on_delete=models.CASCADE,related_name='payment')
     status=models.CharField(max_length=100,choices=PaymentStatus.choices,default=PaymentStatus.CREATED)
     amount=models.DecimalField(max_digits=10,decimal_places=2)
     created_at=models.DateTimeField(auto_now_add=True)

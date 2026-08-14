@@ -1,0 +1,47 @@
+{% extends 'home.html' %}
+
+{% block title %}Payment{% endblock %}
+
+{% block products %}
+<div class="card" style="width: 40%;">
+  <div class="card-body">
+    <h3 class="card-title">Order id: #{{ order.id }}</h3>
+    <p class="card-text">Amount: {{amount}}</p>
+    <button id="pay-button" type="button" class="btn btn-primary">
+        Pay &#8377;{{ amount_rupees }}
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block pagination %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    const options = {
+        key: "{{ razorpay_key }}",
+        amount: "{{ amount }}",
+        currency: "INR",
+        name: "E-Commerce Store",
+        description: "Order #{{ order.id }}",
+        order_id: "{{ payment.razorpay_order_id }}",
+        prefill: {
+            email: "{{ customer.email }}",
+            contact: "{{ customer.phone }}"
+        },
+        handler: function (response) {
+            console.log("Payment ID:", response.razorpay_payment_id);
+            console.log("Order ID:", response.razorpay_order_id);
+            console.log("Signature:", response.razorpay_signature);
+        }
+    };
+
+    const razorpay = new Razorpay(options);
+    document.getElementById("pay-button").addEventListener("click", function (event) {
+        event.preventDefault();
+        razorpay.open();
+    });
+</script>
+{% endblock %}

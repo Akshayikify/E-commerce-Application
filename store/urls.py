@@ -11,5 +11,7 @@ urlpatterns=[
     path('customer/<int:customer_id>/',views.customer_profile,name='profile'), #URL path for customer profile
     path('login',views.login_view,name='login'), # URL path for logout page
     path('update_quantity/<int:pk>/',views.update_quantity,name='update_quantity'),#URL path to update quantity
-    path('checkout/',views.checkout,name='checkout') #URL path for checkout page
+    path('checkout/',views.checkout,name='checkout'), #URL path for checkout page
+    
+    path('payment/<int:order_id>/',views.payment,name='payment') #URL path razor pay payments
 ]

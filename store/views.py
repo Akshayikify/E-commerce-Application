@@ -5,11 +5,14 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
 from translate import Translator
 from django.views.decorators.http import require_POST
-from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem
+from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem,Payment
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+import razorpay
+from django.conf import settings
+
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -166,7 +169,8 @@ def checkout(request):
         order=Order.objects.create(
             customer=customer,
             shipping_address=shipping_address,
-            phone=phone
+            phone=phone,
+            status=Order.Order_Status.PENDING
         )
         
         for item in cart_items:
@@ -183,4 +187,50 @@ def checkout(request):
                   {'cart_items': cart_items,
                    'total_price': total_price,
                    })    
+
+
+@login_required
+def payment(request,order_id):
+    customer=get_object_or_404(
+        Customer,
+        user=request.user,
+    )
+    order=get_object_or_404(
+        Order,
+        id=order_id,
+        customer=customer
+    )
+    if order.status!=Order.Order_Status.PENDING:
+        return redirect(
+            'order_success',
+            order_id=order.id
+        )
+    client = razorpay.Client(auth=
+    (settings.RAZORPAY_KEY_ID, 
+    settings.RAZORPAY_KEY_SECRET
+    ))
+    total=sum(item.total_price for item in order.items.all())
+    amount=int(total*100)
+
+    razorpay_order=client.order.create({
+    "amount": amount,
+    "currency": "INR",
+    "receipt": f"order_{order.id}",
+    })
     
+    payment=Payment.objects.create(
+        order=order,
+        razorpay_order_id=razorpay_order['id'],
+        amount=total 
+    )
+    return render(
+        request,
+        'payment.html',
+        {
+            'payment': payment,
+            'order': order,
+            'amount': amount,
+            'amount_rupees': total,
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'customer': customer
+        })
