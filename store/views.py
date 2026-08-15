@@ -234,3 +234,5 @@ def payment(request,order_id):
             'razorpay_key': settings.RAZORPAY_KEY_ID,
             'customer': customer
         })
+def verify_payments(request):
+    pass

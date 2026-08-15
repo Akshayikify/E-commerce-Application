@@ -13,5 +13,6 @@ urlpatterns=[
     path('update_quantity/<int:pk>/',views.update_quantity,name='update_quantity'),#URL path to update quantity
     path('checkout/',views.checkout,name='checkout'), #URL path for checkout page
     
-    path('payment/<int:order_id>/',views.payment,name='payment') #URL path razor pay payments
+    path('payment/<int:order_id>/',views.payment,name='payment'), #URL path razor pay payments
+    path('payment/verify/',views.verify_payments,name='verify_payments')
 ]
