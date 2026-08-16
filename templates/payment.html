@@ -1,16 +1,36 @@
 {% extends 'home.html' %}
 
-{% block title %}Payment{% endblock %}
+{% block title %}
+Payment
+{% endblock %}
 
 {% block products %}
-<div class="card" style="width: 40%;">
-  <div class="card-body">
-    <h3 class="card-title">Order id: #{{ order.id }}</h3>
-    <p class="card-text">Amount: {{amount}}</p>
-    <button id="pay-button" type="button" class="btn btn-primary">
-        Pay &#8377;{{ amount_rupees }}
-    </button>
-  </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <h3 class="card-title fw-bold text-dark mb-1">Checkout</h3>
+                    <p class="text-muted small mb-4">Order #{{ order.id }}</p>
+
+                    <div class="bg-light p-4 rounded-3 mb-4">
+                        <span class="text-secondary d-block mb-1">Total Amount Payable</span>
+                        <span class="display-6 fw-bold text-dark">₹{{ amount_rupees }}</span>
+                    </div>
+
+                    {% if error %}
+                        <div class="alert alert-danger rounded-3" role="alert">
+                            {{ error }}
+                        </div>
+                    {% else %}
+                        <button id="pay-button" type="button" class="btn btn-primary btn-lg w-100 fw-semibold rounded-pill shadow-sm">
+                            Pay ₹{{ amount_rupees }}
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -18,77 +38,32 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+
 <script>
-    const options = {
-        key: "{{ razorpay_key }}",
-        amount: "{{ amount }}",
-        currency: "INR",
-        name: "E-Commerce Store",
-        description: "Order #{{ order.id }}",
-        order_id: "{{ payment.razorpay_order_id }}",
-        prefill: {
-            email: "{{ customer.email }}",
-            contact: "{{ customer.phone }}"
-        },
-        handler: function (response) {
-            fetch("{% url 'verify_payment' %}", {
-
-        method: "POST",
-
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}"
-        },
-
-        body: JSON.stringify({
-
-            razorpay_payment_id:
-                response.razorpay_payment_id,
-
-            razorpay_order_id:
-                response.razorpay_order_id,
-
-            razorpay_signature:
-                response.razorpay_signature
-
-        })
-
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        if (data.status === "success") {
-
-            window.location.href =
-                data.redirect_url;
-
-        } else {
-
-            alert(
-                data.message ||
-                "Payment verification failed."
-            );
-
-        }
-
-    })
-    .catch(error => {
-
-        console.error(error);
-
-        alert(
-            "Something went wrong while verifying payment."
-        );
-
+    const cashfree = Cashfree({
+        mode: "sandbox"
     });
-        }
-    };
 
-    const razorpay = new Razorpay(options);
-    document.getElementById("pay-button").addEventListener("click", function (event) {
-        event.preventDefault();
-        razorpay.open();
-    });
+    document
+        .getElementById("pay-button")
+        .addEventListener("click", function () {
+
+            const checkoutOptions = {
+                paymentSessionId: "{{ payment_session_id }}",
+                redirectTarget: "_self"
+            };
+
+            cashfree
+                .checkout(checkoutOptions)
+                .then(function (result) {
+                    console.log("Cashfree checkout result:", result);
+                })
+                .catch(function (error) {
+                    console.error("Cashfree checkout error:", error);
+                    alert("Unable to open payment checkout.");
+                });
+
+        });
 </script>
 {% endblock %}

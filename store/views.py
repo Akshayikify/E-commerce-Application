@@ -10,8 +10,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-import razorpay
+import requests
 from django.conf import settings
+import json
+from django.http import JsonResponse
+from django.db import transaction
+from decimal import Decimal
 
 def register(request):
     if request.method=='POST':
@@ -155,38 +159,87 @@ def customer_profile(request,customer_id):
     return render(request,'customer.html',{'customer': customer})
 
 @login_required(login_url='login')
-def checkout(request): 
-    customer=get_object_or_404(
+def checkout(request):
+
+    customer = get_object_or_404(
         Customer,
         user=request.user
     )
-    cart=Cart.objects.filter(customer=customer).prefetch_related('items__product').first()
-    cart_items=CartItem.objects.select_related('product')
-    total_price=sum(item.total_price for item in cart_items)
-    if request.method=='POST':
-        shipping_address=request.POST.get('address')
-        phone=request.POST.get('phone')
-        order=Order.objects.create(
-            customer=customer,
-            shipping_address=shipping_address,
-            phone=phone,
-            status=Order.Order_Status.PENDING
+
+    cart = Cart.objects.filter(
+        customer=customer
+    ).first()
+
+    # Customer does not have a cart
+    if not cart:
+        messages.warning(
+            request,
+            "Your cart is empty."
         )
-        
-        for item in cart_items:
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity,
-                price=item.product.price
+        return redirect('cart')
+
+    # Get ONLY this customer's cart items
+    cart_items = cart.items.select_related(
+        'product'
+    ).all()
+
+    # Empty cart
+    if not cart_items.exists():
+        messages.warning(
+            request,
+            "Your cart is empty."
+        )
+        return redirect('cart')
+
+    # Calculate cart total
+    total_price = sum(
+        item.total_price
+        for item in cart_items
+    )
+
+    if request.method == 'POST':
+
+        shipping_address = request.POST.get(
+            'address'
+        )
+
+        phone = request.POST.get(
+            'phone'
+        )
+
+        with transaction.atomic():
+
+            # Create Order
+            order = Order.objects.create(
+                customer=customer,
+                shipping_address=shipping_address,
+                phone=phone,
+                status=Order.Order_Status.PENDING
             )
-            
-        return redirect('payment',order_id=order.id)
-    
-    return render(request,'checkout.html',
-                  {'cart_items': cart_items,
-                   'total_price': total_price,
-                   })    
+
+            # Create OrderItems from THIS customer's cart
+            for item in cart_items:
+
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=item.product.price
+                )
+
+        return redirect(
+            'payment',
+            order_id=order.id
+        )
+
+    return render(
+        request,
+        'checkout.html',
+        {
+            'cart_items': cart_items,
+            'total_price': total_price,
+        }
+    )
 
 
 @login_required
@@ -205,34 +258,230 @@ def payment(request,order_id):
             'order_success',
             order_id=order.id
         )
-    client = razorpay.Client(auth=
-    (settings.RAZORPAY_KEY_ID, 
-    settings.RAZORPAY_KEY_SECRET
-    ))
     total=sum(item.total_price for item in order.items.all())
-    amount=int(total*100)
+    amount = float(total)
 
-    razorpay_order=client.order.create({
-    "amount": amount,
-    "currency": "INR",
-    "receipt": f"order_{order.id}",
-    })
+    cashfree_order_id = f"order_{order.id}"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-version": settings.CASHFREE_API_VERSION,
+        "x-client-id": settings.CASHFREE_APP_ID,
+        "x-client-secret": settings.CASHFREE_SECRET_KEY,
+    }
+    payload = {
+        "order_id": cashfree_order_id,
+        "order_amount": amount,
+        "order_currency": "INR",
+
+        "customer_details": {
+            "customer_id": str(customer.id),
+            "customer_name": customer.user.username,
+            "customer_email": customer.email,
+            "customer_phone": str(customer.phone),
+        },
+
+        "order_meta": {
+            "return_url": (
+                request.build_absolute_uri(
+                    f"/payment/return/?order_id={cashfree_order_id}"
+                )
+            )
+        },
+
+        "order_note": f"Payment for Django Order #{order.id}",
+    }
     
-    payment=Payment.objects.create(
+    try:
+
+        response = requests.post(
+            f"{settings.CASHFREE_BASE_URL}/orders",
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        cashfree_order = response.json()
+
+    except requests.RequestException as e:
+
+        print("Cashfree order creation error:", e)
+
+        return render(
+            request,
+            "payment.html",
+            {
+                "order": order,
+                "amount_rupees": total,
+                "error": "Unable to create payment order."
+            }
+        )
+    
+    payment, created = Payment.objects.update_or_create(
         order=order,
-        razorpay_order_id=razorpay_order['id'],
-        amount=total 
+        defaults={
+            "cashfree_order_id": cashfree_order["order_id"],
+            "amount": total,
+            "status": Payment.PaymentStatus.PENDING,
+        }
     )
     return render(
         request,
-        'payment.html',
+        "payment.html",
         {
-            'payment': payment,
-            'order': order,
-            'amount': amount,
-            'amount_rupees': total,
-            'razorpay_key': settings.RAZORPAY_KEY_ID,
-            'customer': customer
-        })
-def verify_payments(request):
-    pass
+            "payment": payment,
+            "order": order,
+            "amount_rupees": total,
+            "payment_session_id": cashfree_order[
+                "payment_session_id"
+            ],
+            "customer": customer,
+        }
+    )
+ 
+@login_required
+def order_success(request,order_id):
+    customer=get_object_or_404(
+        Customer,
+        user=request.user
+    )
+    order=get_object_or_404(
+        Order,
+        id=order_id,
+        customer=customer
+    )
+    return render(
+        request,
+        "order_success.html",
+        {
+            "order": order
+        }
+    )
+
+@login_required
+def payment_return(request):
+
+    cashfree_order_id = request.GET.get("order_id")
+
+    if not cashfree_order_id:
+        return render(
+            request,
+            "payment_failed.html",
+            {
+                "message": "Payment order ID is missing."
+            }
+        )
+
+    customer = get_object_or_404(
+        Customer,
+        user=request.user
+    )
+
+    payment = get_object_or_404(
+        Payment,
+        cashfree_order_id=cashfree_order_id,
+        order__customer=customer
+    )
+
+    headers = {
+        "x-api-version": settings.CASHFREE_API_VERSION,
+        "x-client-id": settings.CASHFREE_APP_ID,
+        "x-client-secret": settings.CASHFREE_SECRET_KEY,
+    }
+
+    try:
+
+        response = requests.get(
+            f"{settings.CASHFREE_BASE_URL}/orders/"
+            f"{cashfree_order_id}",
+
+            headers=headers,
+
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        cashfree_order = response.json()
+
+    except requests.RequestException as e:
+
+        print("Cashfree status error:", e)
+
+        return render(
+            request,
+            "payment_failed.html",
+            {
+                "message":
+                    "Unable to verify payment status."
+            }
+        )
+
+    order_status = cashfree_order.get(
+        "order_status"
+    )
+
+    print(
+        "Cashfree order status:",
+        order_status
+    )
+
+    if order_status == "PAID":
+
+        payment.status = (
+            Payment.PaymentStatus.SUCCESS
+        )
+
+        payment.save()
+
+        order = payment.order
+
+        order.status = (
+            Order.Order_Status.PAID
+        )
+
+        order.save()
+
+        # Clear cart only after successful payment
+        cart = Cart.objects.filter(
+            customer=order.customer
+        ).first()
+
+        if cart:
+            cart.items.all().delete()
+
+        return redirect(
+            "order_success",
+            order_id=order.id
+        )
+
+    elif order_status in ["FAILED", "CANCELLED"]:
+
+        payment.status = (
+            Payment.PaymentStatus.FAILED
+        )
+
+        payment.save()
+
+        return render(
+            request,
+            "payment_failed.html",
+            {
+                "order": payment.order,
+                "message":
+                    "Payment was unsuccessful."
+            }
+        )
+
+    else:
+
+        return render(
+            request,
+            "payment_failed.html",
+            {
+                "order": payment.order,
+                "message":
+                    "Payment is still being processed."
+            }
+        )

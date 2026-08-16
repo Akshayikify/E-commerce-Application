@@ -61,6 +61,13 @@ class Order(models.Model):
     phone=PhoneNumberField(region='IN')
     status=models.CharField(max_length=3,choices=Order_Status.choices,default=Order_Status.PENDING)
     
+    @property
+    def total_price(self):
+        return sum(
+            item.total_price
+            for item in self.items.all()
+        )
+    
     def __str__(self):
         return f"Order #id {self.id}- {self.customer.user.username}"
 
@@ -119,12 +126,13 @@ class Payment(models.Model):
         CREATED='CREATED','Created'
         SUCCESS='SUCCESS','Success'
         FAILED='FAILED','Failed'
-    razorpay_payment_id =models.CharField(
+        PENDING='PENDING','Pending'
+    cashfree_payment_id =models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
-    razorpay_order_id=models.CharField(
+    cashfree_order_id=models.CharField(
         max_length=255,
         blank=True,
         null=True
@@ -136,5 +144,5 @@ class Payment(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"Payment for order #{self.orer.id}"
+        return f"Payment for order #{self.order.id}"
     

@@ -1,0 +1,40 @@
+{% extends 'home.html' %}
+
+{% block products %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0 rounded-3 text-center">
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-3 text-danger">
+                        <i class="bi bi-x-circle-fill display-1"></i>
+                        <h1 class="h3 mt-2 fw-bold text-dark">Payment Failed ❌</h1>
+                    </div>
+
+                    <div class="alert alert-danger-subtle text-danger border-danger-subtle rounded-3 py-2 px-3 mb-4 fs-6">
+                        {{ message }}
+                    </div>
+
+                    {% if order %}
+                        <p class="text-muted mb-4">
+                            Order ID: <strong class="text-dark">#{{ order.id }}</strong>
+                        </p>
+                        
+                        <div class="d-grid gap-2 mb-3">
+                            <a href="{% url 'payment' order.id %}" class="btn btn-danger btn-lg fw-semibold rounded-pill shadow-sm">
+                                Try Payment Again
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid">
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg fw-semibold rounded-pill">
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
