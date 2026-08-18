@@ -13,12 +13,16 @@ from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import requests
 from django.conf import settings
 import json
+import io
+
 from django.http import JsonResponse
 from django.db import transaction
 from decimal import Decimal
+from reportlab.lib import colors
 from django.http import FileResponse
-import io
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums  import TA_CENTER,TA_RIGHT
+from reportlab.platypus import SimpleDocTemplate,Table,Paragraph,Spacer
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 def register(request):
@@ -371,39 +375,40 @@ def download_invoice(request, order_id):
         id=order_id,
         customer__user=request.user,
     )
-
-    # Generate a PDF invoice for the customer.  ``order.items`` is a related
-    # manager, so an order can contain multiple OrderItem objects.
     buf=io.BytesIO()
-    c=canvas.Canvas(buf,pagesize=letter,bottomup=0)
-    text_ob=c.beginText()
-    text_ob.setTextOrigin(inch,inch)
-    text_ob.setFont('Helvetica',14)
-    lines = [
-        "E-Commerce Bengaluru",
-        f"Invoice for Order #{order.id}",
-        "",
+    lines=[]
+    title=ParagraphStyle(
+        name='TitleStyle',
+        fontName='Helvetica-Bold',
+        fontSize=24,
+        alignment=TA_CENTER
+    )
+    lines.append(Paragraph('E-Commerce Application', title))
+    lines.append(Spacer(1,20))
+    doc=SimpleDocTemplate(buf,pagesize=letter,rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40) 
+    table_data=[
+        ["Product Tile","Product Quabtity","Product Price","Total Price"]
     ]
-
     for item in order.items.all():
-        lines.extend([
-            f"Product Name: {item.product.title}",
-            f"Product Quantity: {item.quantity}",
-            f"Price: {item.price}",
-            f"Item Total: {item.total_price}",
-            "",
-        ])
-
-    lines.append(f"Order Total: {order.total_price}")
-        
-    for line in lines:
-        text_ob.textLines(line)
-            
-    c.drawText(text_ob)
-    c.showPage()
-    c.save()
+        table_data.extend(
+            [[item.product.title,item.quantity,item.product.price,item.total_price]]
+        )
+    table = Table(table_data,colWidths=[180, 90, 90, 90],style=[('ALIGN',(0,0),(-1,-1),'CENTER'),('LINEBELOW',(0,0),(-1,-1),1,colors.black)])
+    lines.append(table)
+    lines.append(Spacer(1,20))
+    order_total=ParagraphStyle(
+        name='Normal',
+        fontName='Helvetica',
+        fontSize=12,
+        alignment=TA_RIGHT
+    )
+    lines.append(Paragraph(f'Order Total: ₹ {order.total_price}', order_total))
+    doc.build(lines)      
     buf.seek(0)
-    return FileResponse(buf,as_attachment=True,filename=f'invoice-order-{order.id}.pdf')
+    return FileResponse(buf,as_attachment=True,filename=f'invoice_order{order.id}.pdf')
 @login_required
 def payment_return(request):
 
