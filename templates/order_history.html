@@ -1,0 +1,83 @@
+{% extends 'home.html' %}
+{% block products %}
+<div class="container py-4">
+    <!-- Flash Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <span>{{ message }}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h2 class="fw-bold mb-4">Order History</h2>
+    {% if orders  %}
+        <div class="table-responsive shadow-sm rounded-3">
+  <table class="table table-hover align-middle mb-0 bg-white">
+    <!-- Spacious Header -->
+    <thead class="table-light border-bottom">
+      <tr class="text-uppercase small text-muted">
+        <th scope="col" class="py-3 px-4" style="width: 10%;">Order ID</th>
+        <th scope="col" class="py-3 px-3" style="width: 35%;">Products</th>
+        <th scope="col" class="py-3 px-3" style="width: 15%;">Status</th>
+        <th scope="col" class="py-3 px-3" style="width: 20%;">Date</th>
+        <th scope="col" class="py-3 px-4 text-end" style="width: 20%;">Price</th>
+        <th scope="col" class="py-3 px-4 text-end" style="width: 20%;">Invoice</th>
+
+      </tr>
+    </thead>
+    
+    <!-- Table Body -->
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <!-- Order ID -->
+          <th scope="row" class="py-3 px-4 fw-bold text-secondary">
+            #{{ order.id }}
+          </th>
+          
+          <!-- Products -->
+          <td class="py-3 px-3">
+            <div class="d-flex flex-wrap gap-1">
+              {% for item in order.items.all %}
+                <span class="badge bg-light text-dark border fw-normal py-2 px-2">
+                  {{ item.product.title }}
+                </span>
+              {% endfor %}
+            </div>
+          </td>
+          
+          <!-- Status -->
+          <td class="py-3 px-3">
+            {% if order.status == 'Completed' %}
+              <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-semibold">
+                {{ order.status|title }}
+              </span>
+            {% else %}
+              <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill fw-semibold">
+                {{ order.status|title }}
+              </span>
+            {% endif %}
+          </td>
+          
+          <!-- Date -->
+          <td class="py-3 px-3 text-muted">
+            {{ order.created_at|date:"F j, Y" }}
+          </td>
+          
+          <!-- Price -->
+          <td class="py-3 px-4 text-end fw-bold text-dark">
+            ${{ order.total_price }}
+          </td>
+          <!-- Invoice -->
+           <td class="py-3 px-4 text-end fw-bold text-dark">
+             <a href="{% url 'download_invoice' order.id %}"><i class="fa-solid fa-download"></i></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}{% endblock %}

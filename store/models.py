@@ -50,16 +50,16 @@ class Customer(models.Model):
 class Order(models.Model):
     """ It creates Orders table , which stores the shipping data of the customer orders.Each order bound to a authenticated customer"""
     class Order_Status(models.TextChoices):
-        PENDING='PEN','pending'
-        PAID='PD','paid'
-        SHIPPED='SH','shipped'
-        DELIVERED='DL','delivered'
-        CANCELED='CL','canceled'
+        PENDING='PENDING','pending'
+        PAID='PAID','paid'
+        SHIPPED='SHIPPED','shipped'
+        DELIVERED='DELIVERED','delivered'
+        CANCELED='CANCELED','canceled'
     customer=models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='orders')
     shipping_address=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
     phone=PhoneNumberField(region='IN')
-    status=models.CharField(max_length=3,choices=Order_Status.choices,default=Order_Status.PENDING)
+    status=models.CharField(max_length=10,choices=Order_Status.choices,default=Order_Status.PENDING)
     
     @property
     def total_price(self):

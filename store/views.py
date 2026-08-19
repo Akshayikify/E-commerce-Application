@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem,Payment
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q,Case,Value,When,IntegerField
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 import requests
 from django.conf import settings
@@ -81,7 +81,13 @@ def home(request):
             Q(title__icontains=query)|
             Q(description__icontains=query)|
             Q(category__name__icontains=query)
-        ).distinct()
+        ).annotate(priority=Case(
+            When(title__iexact=query,then=Value(3)),
+            When(description__iexact=query,then=Value(2)),
+            When(category__name__iexact=query,then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField()
+        )).order_by('-priority').distinct()
         if products.exists():
             messages.success(request,"Product found successfully")
         else:
@@ -405,7 +411,7 @@ def download_invoice(request, order_id):
         fontSize=12,
         alignment=TA_RIGHT
     )
-    lines.append(Paragraph(f'Order Total: ₹ {order.total_price}', order_total))
+    lines.append(Paragraph(f'Order Total: Rs. {order.total_price}', order_total))
     doc.build(lines)      
     buf.seek(0)
     return FileResponse(buf,as_attachment=True,filename=f'invoice_order{order.id}.pdf')
@@ -535,3 +541,9 @@ def payment_return(request):
                     "Payment is still being processed."
             }
         )
+
+# Order Management
+def Order_mngt(request):
+    customer=get_object_or_404(Customer,user=request.user)
+    orders=Order.objects.filter(customer=customer).prefetch_related('items__product').order_by('-created_at')
+    return render(request,'order_history.html',{'orders': orders})
