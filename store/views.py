@@ -14,7 +14,7 @@ import requests
 from django.conf import settings
 import json
 import io
-
+import datetime
 from django.http import JsonResponse
 from django.db import transaction
 from decimal import Decimal
@@ -547,3 +547,14 @@ def Order_mngt(request):
     customer=get_object_or_404(Customer,user=request.user)
     orders=Order.objects.filter(customer=customer).prefetch_related('items__product').order_by('-created_at')
     return render(request,'order_history.html',{'orders': orders})
+def order_items(request,order_id):
+    customer=get_object_or_404(Customer,user=request.user)
+    order=Order.objects.get(pk=order_id)
+    return render(request,'order_items.html',{'order': order})
+    
+
+def order_detail(request,order_item_id):
+    order_item=OrderItem.objects.get(pk=order_item_id)
+    time=datetime.datetime.now()
+    formatted_time=time.strftime('%I:%M %p')
+    return render(request,'order_detail.html',{'order_item': order_item,'time': formatted_time })

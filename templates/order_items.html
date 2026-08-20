@@ -1,0 +1,52 @@
+{% extends 'home.html' %}
+<title>{% block title %}Cart{% endblock %}</title>
+{% block products %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Order Items</h2>
+
+    {% if order and order.items.all %}
+        <div class="row g-4">
+            <!-- Left Column: Item List -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush rounded-3">
+                            {% for item in order.items.all %}
+                                <li class="list-group-item p-3">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                        
+                                        <!-- Product Image & Details -->
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if item.product.product_image %}
+                                                <img src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" class="rounded img-fluid" style="width: 70px; height: 70px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 70px; height: 70px;">
+                                                    <i class="bi bi-image fs-4"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1 fw-semibold">{{ item.product.title }}</h6>
+                                                <small class="text-muted">Unit Price: ₹ {{ item.product.price }}</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Quantity & Actions -->
+                                        <div class="d-flex align-items-center gap-4">
+                                            <a href="{% url 'order_detail' item.id %}" type="btn btn-primary">View Order</a>
+                                            <span class="badge bg-light text-dark border px-3 py-2 fw-normal">
+                                                Qty: <strong>{{ item.quantity }}</strong>
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endif %}
+{% endblock %}
+{% block pagination %}
+{% endblock %}

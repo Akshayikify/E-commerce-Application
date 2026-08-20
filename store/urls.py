@@ -17,5 +17,7 @@ urlpatterns=[
     path('payment/return/',views.payment_return,name='payment_return'),
     path('order/<int:order_id>/success/',views.order_success,name='order_success'),
     path('download_invoice/<int:order_id>/',views.download_invoice,name='download_invoice'),
-    path('orders/',views.Order_mngt,name='orders')
+    path('orders/',views.Order_mngt,name='orders'),
+    path('order/<int:order_item_id>/',views.order_detail,name='order_detail'),
+    path('order/<int:order_id>/order_items',views.order_items,name='order_items'),
 ]

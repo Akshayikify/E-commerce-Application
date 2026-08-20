@@ -1,0 +1,54 @@
+{% extends 'home.html' %}
+
+{% block products %}
+{% if order_item %}
+<section class="vh-100 gradient-custom-2">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-10 col-lg-8 col-xl-6">
+        <div class="card card-stepper" style="border-radius: 16px;">
+          <div class="card-header p-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-2"> Order ID <span class="fw-bold text-body">{{ order_item.order.id }}</span></p>
+                <p class="text-muted mb-0"> Place On <span class="fw-bold text-body">{{ order_item.order.created_at|date:"F j, Y"}}</span> </p>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <div class="d-flex flex-row mb-4 pb-2">
+              <div class="flex-fill">
+                <h5 class="bold">{{ order_item.product.title }}</h5>
+                <p class="text-muted"> Qt: {{order_item.quantity }} item</p>
+                {% if order_item.order.status == 'PD' %}
+                <h4 class="mb-3">₹{{ order_item.total_price }}<span class="small text-muted">(Paid)</span></h4>
+                {% else %}
+                <h4 class="mb-3">₹{{ order_item.total_price }}<span class="small text-muted">(COD)</span></h4>
+                {% endif %}
+                <p class="text-muted">Tracking Status on: <span class="text-body">{{ time }}, Today</span></p>
+              </div>
+              <div>
+                <img class="align-self-center img-fluid"
+                  src="{{ order_item.product.product_image.url }}" style="width: 150px; height: 100px; object-fit: cover;">
+              </div>
+            </div>
+            <ul id="progressbar-1" class="mx-0 mt-0 mb-5 px-0 pt-0 pb-4">
+              <li class="step0 active" id="step1"><span
+                  style="margin-left: 22px; margin-top: 12px;">PLACED</span></li>
+              <li class="step0 text-center {% if order_item.order.status == 'SHIPPED' or order_item.order.status == 'DELIVERED' %}active{% else %}text-muted{% endif %}" id="step2"><span>SHIPPED</span></li>
+              <li class="step0 text-end {% if order_item.order.status == 'DELIVERED' %}active{% else %}text-muted{% endif %}" id="step3"><span
+                  style="margin-right: 22px;">DELIVERED</span></li>
+            </ul>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+{% block pagination %}
+{% endblock %}
+{% block scripts %}
+{% endblock %}
