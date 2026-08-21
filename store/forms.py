@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Customer
+from .models import Customer,Rating
 from django.contrib.auth.forms import AuthenticationForm
 
 class RegistrationForm(forms.Form):
@@ -25,4 +25,11 @@ class RegistrationForm(forms.Form):
         if cleaned.get('password')!=cleaned.get('confirm_password'):
             raise forms.ValidationError("Password doesn't match")
         return cleaned
+class RatingForm(forms.ModelForm):
+    rating = forms.IntegerField(min_value=1, max_value=5)
+
+    class Meta:
+        model=Rating
+        fields=['rating']
+        
 

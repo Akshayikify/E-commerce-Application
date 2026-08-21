@@ -1,11 +1,11 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import RegistrationForm
+from .forms import RegistrationForm,RatingForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
 from translate import Translator
 from django.views.decorators.http import require_POST
-from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem,Payment
+from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem,Payment,Rating
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q,Case,Value,When,IntegerField
@@ -25,6 +25,7 @@ from reportlab.lib.enums  import TA_CENTER,TA_RIGHT
 from reportlab.platypus import SimpleDocTemplate,Table,Paragraph,Spacer
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
+from django.db.models import Avg
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -65,7 +66,7 @@ def logout_view(request):
 def home(request):
     query=request.GET.get('q',"").strip()
     category_id=request.GET.get('category','').strip()
-    products=Product.objects.only('id','product_image','title','price').order_by('id')
+    products=Product.objects.annotate(avg_rating=Avg('ratings__rating')).order_by('id')
     categories=Category.objects.all()
     if category_id:
         products=Product.objects.filter(category_id=category_id)
@@ -92,7 +93,7 @@ def home(request):
             messages.success(request,"Product found successfully")
         else:
             messages.warning(request,'No product found')
-    paginator=Paginator(products,4)
+    paginator=Paginator(products,8)
     page_no=request.GET.get('page')
     page_obj=paginator.get_page(page_no)
     context={
@@ -542,19 +543,31 @@ def payment_return(request):
             }
         )
 
+@login_required
 # Order Management
 def Order_mngt(request):
     customer=get_object_or_404(Customer,user=request.user)
     orders=Order.objects.filter(customer=customer).prefetch_related('items__product').order_by('-created_at')
     return render(request,'order_history.html',{'orders': orders})
 def order_items(request,order_id):
-    customer=get_object_or_404(Customer,user=request.user)
+    
     order=Order.objects.get(pk=order_id)
     return render(request,'order_items.html',{'order': order})
     
-
+@login_required
 def order_detail(request,order_item_id):
     order_item=OrderItem.objects.get(pk=order_item_id)
+    
+    customer=get_object_or_404(Customer,user=request.user)
+    if request.method=='POST':
+        form=RatingForm(request.POST)
+        if form.is_valid():
+            rating=form.cleaned_data['rating']
+            Rating.objects.create(rating=rating,customer=customer,product=order_item.product)
+            messages.success(request,f"Rating has been successfully submitted for {order_item.product.title}")
+            return redirect('orders')
+    else:
+        form=RatingForm()
     time=datetime.datetime.now()
     formatted_time=time.strftime('%I:%M %p')
-    return render(request,'order_detail.html',{'order_item': order_item,'time': formatted_time })
+    return render(request,'order_detail.html',{'order_item': order_item,'time': formatted_time,'form': form})

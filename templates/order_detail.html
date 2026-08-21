@@ -39,6 +39,20 @@
               <li class="step0 text-end {% if order_item.order.status == 'DELIVERED' %}active{% else %}text-muted{% endif %}" id="step3"><span
                   style="margin-right: 22px;">DELIVERED</span></li>
             </ul>
+            {% if order_item.order.status == 'DELIVERED' %}
+              <p class="text-success"></i><i class="fa-solid fa-circle-check"></i>Delivered</p>
+            {% endif %}
+              {% if order_item.order.status == 'DELIVERED' %}
+                  <form class="row g-3" method="post" action="{% url 'order_detail' order_item.id %}">
+                    {% csrf_token %}
+                    <div class="d-flex g-2 gap-2">
+                    {{ form.as_p }}
+                   <div class="col-4">
+                      <button type="submit" class="btn btn-primary mb-3">Submit Rating</button>
+                    </div>
+                    </div>
+              {% endif %}
+            </form>
           </div>
           </div>
         </div>

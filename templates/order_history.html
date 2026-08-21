@@ -69,16 +69,10 @@
           <td class="py-3 px-4 text-end fw-bold text-dark">
             ${{ order.total_price }}
           </td>
-          {% if order.status == 'PD' %}
           <!-- Invoice -->
            <td class="py-3 px-4 text-end fw-bold text-dark">
              <a href="{% url 'download_invoice' order.id %}"><i class="fa-solid fa-download"></i></a>
           </td>
-          {% else %}
-          <td class="py-3 px-4 text-end fw-bold text-dark">
-             Invoice not generated
-          </td>
-          {% endif %}
           <td class="py-3 px-4 text-end fw-bold text-dark">
              <a href="{% url 'order_items' order.id %}">View</i></a>
           </td>

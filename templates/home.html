@@ -214,6 +214,30 @@
                                         </h5>
                                         <p class="card-text fs-5 fw-bold text-primary mb-3">₹{{ product.price }}</p>
                                     </div>
+                                    <div>
+                                            <div class="d-flex flex-row justify-content-center mt-1 mb-4 text-danger">
+                                                {% if product.avg_rating %}
+                                                {% for i in "12345" %}
+                                                   {% if forloop.counter <= product.avg_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="fa-regular fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% else %}
+                                                    <i class="fa-regular fa-star"></i>
+                                                    <i class="fa-regular fa-star"></i>
+                                                    <i class="fa-regular fa-star"></i>
+                                                    <i class="fa-regular fa-star"></i>
+                                                    <i class="fa-regular fa-star"></i>
+                                                {% endif %}
+                                            </div>
+                                            {% if product.avg_rating %}
+                                                <p class="small text-muted">Rated {{ product.avg_rating }}/5</p>
+                                            {% else %}
+                                                <p class="small text-muted">Rated 0.0/5</p>
+                                            {% endif %}
+                                          </div>
                                     
                                     <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary btn-sm w-100 rounded-2">
                                         View Product

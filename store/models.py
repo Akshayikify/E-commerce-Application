@@ -86,11 +86,9 @@ class OrderItem(models.Model):
         return f"{self.quantity} x {self.product.title}"
 class Rating(models.Model):
     """Rating is bound to authenticated customer and product selected for checkout."""
-    customer=models.ForeignKey(Customer,on_delete=models.CASCADE,related_name='ratings')
-    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    customer=models.ForeignKey(Customer,on_delete=models.CASCADE)
+    product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name='ratings')
     rating=models.PositiveSmallIntegerField(validators=[MinValueValidator(1),MaxValueValidator(5)])
-    class Meta:
-        unique_together=('customer','product')
 class Cart(models.Model):
     """ Cart is bound to authenticated customer and stores datetime of creation. """
     customer=models.OneToOneField(Customer,on_delete=models.CASCADE,related_name='cart')
