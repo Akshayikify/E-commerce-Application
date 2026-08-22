@@ -26,6 +26,7 @@ class Product(models.Model):
     price=models.DecimalField(decimal_places=2,max_digits=7,default=45.78)
     category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name='categories')
     title_kn=models.CharField(max_length=255,blank=True,null=True)
+    stock=models.IntegerField(default=10)
     def save(self,*args,**kwargs):
         if not self.title_kn and self.title:
             try:
