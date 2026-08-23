@@ -1,6 +1,7 @@
 {% extends 'home.html' %}
 <title>{% block title %}Check-Payment{% endblock %}</title>
 {% block products %}
+{% if available %}
 <div class="container py-4 d-flex justify-content-center">
     {% if messages %}
     {% for message in messages %}
@@ -46,7 +47,7 @@
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-3">Order Summary</h5>
                         
-                        {% if cart_items %}
+            {% if cart_items %}
              <div class="row g-4">
             <!-- Left Column: Item List -->
                 <div class="col-lg-12">
@@ -90,7 +91,15 @@
             </div>
      
      </div>
-
+{% else %}
+<div class="text-center py-5 text-muted">
+                    <i class="bi bi-box-seam display-4 mb-3 d-block"></i>
+                    <h4>Item out of stock</h4>
+                    <a href="{% url 'home' %}" class="btn btn-link">
+                            ← Try Another way
+                   </a>
+                </div>
+{% endif %}
 {% endblock %}
 
 {% block pagination %}

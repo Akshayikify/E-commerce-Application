@@ -206,6 +206,12 @@ def checkout(request):
         )
         return redirect('cart')
 
+    # Stock Management
+    available = all(
+        item.product.stock >= item.quantity
+        for item in cart_items
+    )
+
     # Calculate cart total
     total_price = sum(
         item.total_price
@@ -213,6 +219,10 @@ def checkout(request):
     )
 
     if request.method == 'POST':
+
+        if not available:
+            messages.warning(request, "One or more items are no longer in stock.")
+            return redirect('checkout')
 
         shipping_address = request.POST.get(
             'address'
@@ -224,6 +234,26 @@ def checkout(request):
 
         with transaction.atomic():
 
+            # Lock and re-check the products immediately before creating the
+            # order.  This prevents two simultaneous checkouts from selling
+            # more units than are in stock.
+            locked_products = {
+                item.product_id: Product.objects.select_for_update().get(
+                    pk=item.product_id
+                )
+                for item in cart_items
+            }
+
+            if any(
+                locked_products[item.product_id].stock < item.quantity
+                for item in cart_items
+            ):
+                messages.warning(
+                    request,
+                    "One or more items are no longer in stock."
+                )
+                return redirect('checkout')
+
             # Create Order
             order = Order.objects.create(
                 customer=customer,
@@ -234,13 +264,17 @@ def checkout(request):
 
             # Create OrderItems from THIS customer's cart
             for item in cart_items:
+                product = locked_products[item.product_id]
 
                 OrderItem.objects.create(
                     order=order,
-                    product=item.product,
+                    product=product,
                     quantity=item.quantity,
-                    price=item.product.price
+                    price=product.price
                 )
+
+                product.stock -= item.quantity
+                product.save(update_fields=['stock'])
 
         return redirect(
             'payment',
@@ -253,6 +287,7 @@ def checkout(request):
         {
             'cart_items': cart_items,
             'total_price': total_price,
+            'available': available,
         }
     )
 
