@@ -26,6 +26,8 @@ from reportlab.platypus import SimpleDocTemplate,Table,Paragraph,Spacer
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 from django.db.models import Avg
+from .tasks import send_confirmation_mail
+from django.http import HttpResponse
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -432,7 +434,7 @@ def download_invoice(request, order_id):
         topMargin=40,
         bottomMargin=40) 
     table_data=[
-        ["Product Tile","Product Quabtity","Product Price","Total Price"]
+        ["Product Title","Product Quantity","Product Price","Total Price"]
     ]
     for item in order.items.all():
         table_data.extend(
@@ -606,3 +608,16 @@ def order_detail(request,order_item_id):
     time=datetime.datetime.now()
     formatted_time=time.strftime('%I:%M %p')
     return render(request,'order_detail.html',{'order_item': order_item,'time': formatted_time,'form': form})
+
+
+@login_required
+def order_confirmation_mail(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    if order.status == Order.Order_Status.PAID:
+        if order.customer.email:
+            send_confirmation_mail.delay(order_id, order.customer.email)
+            return HttpResponse(f"Confirmation mail triggered for Order #{order.id} to {order.customer.email}.")
+        return HttpResponse(f"No email address found for customer of Order #{order.id}.", status=400)
+    return HttpResponse(f"Order #{order.id} is not in a paid status (Current status: {order.status}).", status=400)
+
+        
