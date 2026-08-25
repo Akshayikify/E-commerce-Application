@@ -31,5 +31,10 @@ class RatingForm(forms.ModelForm):
     class Meta:
         model=Rating
         fields=['rating']
+
+class CustomerUpdateForm(forms.ModelForm):
+    class Meta:
+        model=Customer
+        fields=['email','phone','address']
         
 

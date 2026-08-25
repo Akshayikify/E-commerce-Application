@@ -159,7 +159,7 @@
                         <i class="bi bi-cart3"></i> Cart <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> {{ cart_item_count }}
                     </a> 
                         <span class="navbar-text me-2 text-light small">
-                            <a href="{% url 'profile' user.customer.id %}"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</a>
+                            <a href="{% url 'profile' %}"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</a>
                         </span>
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
                           

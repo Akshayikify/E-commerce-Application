@@ -1,9 +1,8 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .forms import RegistrationForm,RatingForm
+from .forms import RegistrationForm,RatingForm,CustomerUpdateForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login,logout
-from translate import Translator
 from django.views.decorators.http import require_POST
 from .models import Customer,Product,Cart,CartItem,Category,Order,OrderItem,Payment,Rating
 from django.contrib.auth.decorators import login_required
@@ -171,9 +170,39 @@ def remove_cart_item(request,pk):
     messages.success(request,f"{cart_item.product.title} is removed from cart")
     return redirect('cart')
 @login_required
-def customer_profile(request,customer_id):
-    customer=Customer.objects.get(pk=customer_id)
-    return render(request,'customer.html',{'customer': customer})
+def customer_profile(request):
+
+    customer = get_object_or_404(Customer, user=request.user)
+
+    show_modal = False
+
+    if request.method == 'POST':
+
+        form = CustomerUpdateForm(request.POST, instance=customer)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(request, 'Your profile has been updated!')
+
+            return redirect('profile')
+
+        else:
+            messages.error(request, 'Please correct the errors below.')
+            show_modal = True
+
+    else:
+        form = CustomerUpdateForm(instance=customer)
+
+    return render(
+        request,
+        'customer.html',
+        {
+            'customer': customer,
+            'form': form,
+            'show_modal': show_modal
+        }
+    )
 
 @login_required(login_url='login')
 def checkout(request):
@@ -620,4 +649,5 @@ def order_confirmation_mail(request, order_id):
         return HttpResponse(f"No email address found for customer of Order #{order.id}.", status=400)
     return HttpResponse(f"Order #{order.id} is not in a paid status (Current status: {order.status}).", status=400)
 
-        
+
+    

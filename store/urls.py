@@ -8,7 +8,7 @@ urlpatterns=[
     path('cart/',views.cart_detail,name='cart'),# URL path for cart page
     path('cart/add/<int:pk>/',views.add_to_cart,name='add_to_cart'), #URL path for add to cart
     path('cart/remove/<int:pk>/',views.remove_cart_item,name='remove_cart_item'), # URL path for remove items from cart
-    path('customer/<int:customer_id>/',views.customer_profile,name='profile'), #URL path for customer profile
+    path('customer',views.customer_profile,name='profile'), #URL path for customer profile
     path('login',views.login_view,name='login'), # URL path for logout page
     path('update_quantity/<int:pk>/',views.update_quantity,name='update_quantity'),#URL path to update quantity
     path('checkout/',views.checkout,name='checkout'), #URL path for checkout page
@@ -20,5 +20,5 @@ urlpatterns=[
     path('orders/',views.Order_mngt,name='orders'),
     path('order/<int:order_item_id>/',views.order_detail,name='order_detail'),
     path('order/<int:order_id>/order_items',views.order_items,name='order_items'),
-    path('confirmation_mail/<int:order_id>/',views.order_confirmation_mail,name='confirmation_mail')
+    path('confirmation_mail/<int:order_id>/',views.order_confirmation_mail,name='confirmation_mail'),
 ]
