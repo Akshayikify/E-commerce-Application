@@ -80,9 +80,9 @@ def home(request):
             profile=None
     if query:
         products=Product.objects.filter(
-            Q(title__icontains=query)|
-            Q(description__icontains=query)|
-            Q(category__name__icontains=query)
+            Q(title__icontains=query.strip('s'))|
+            Q(description__icontains=query.strip('s'))|
+            Q(category__name__icontains=query.strip('s'))
         ).annotate(priority=Case(
             When(title__iexact=query,then=Value(3)),
             When(description__iexact=query,then=Value(2)),

@@ -233,7 +233,7 @@
                                                 {% endif %}
                                             </div>
                                             {% if product.avg_rating %}
-                                                <p class="small text-muted">Rated {{ product.avg_rating }}/5</p>
+                                                <p class="small text-muted">Rated {{ product.avg_rating|floatformat:1}}/5</p>
                                             {% else %}
                                                 <p class="small text-muted">Rated 0.0/5</p>
                                             {% endif %}
