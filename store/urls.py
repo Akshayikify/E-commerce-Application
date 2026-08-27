@@ -21,4 +21,6 @@ urlpatterns=[
     path('order/<int:order_item_id>/',views.order_detail,name='order_detail'),
     path('order/<int:order_id>/order_items',views.order_items,name='order_items'),
     path('confirmation_mail/<int:order_id>/',views.order_confirmation_mail,name='confirmation_mail'),
+    
+    path('chat/',views.chat_view,name='chat'),
 ]

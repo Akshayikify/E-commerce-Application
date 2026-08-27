@@ -27,6 +27,9 @@ from reportlab.lib.pagesizes import letter
 from django.db.models import Avg
 from .tasks import send_confirmation_mail
 from django.http import HttpResponse
+from openai import OpenAI
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 def register(request):
     if request.method=='POST':
         form=RegistrationForm(request.POST)
@@ -649,5 +652,40 @@ def order_confirmation_mail(request, order_id):
         return HttpResponse(f"No email address found for customer of Order #{order.id}.", status=400)
     return HttpResponse(f"Order #{order.id} is not in a paid status (Current status: {order.status}).", status=400)
 
+client=OpenAI(api_key=settings.OPENAI_API_KEY, base_url="https://openrouter.ai")
 
-    
+
+@csrf_exempt
+def chat_view(request):
+
+    if request.method == 'POST':
+
+        user_message = request.POST.get('message', '').strip()
+
+        if not user_message:
+            return JsonResponse({
+                'message': 'Please enter a message.'
+            }, status=400)
+
+        try:
+
+            response = client.responses.create(
+                model='gpt-5-mini',
+                instructions='You are a helpful e-commerce assistant.',
+                input=user_message
+            )
+
+            ai_message = response.output_text
+
+            return JsonResponse({
+                'message': ai_message
+            })
+
+        except Exception as e:
+
+            return JsonResponse({
+                'message': 'Something went wrong.',
+                'error': str(e)
+            }, status=500)
+
+    return render(request, 'chat.html')

@@ -1,0 +1,103 @@
+{% extends 'home.html' %}
+<title>{% block title %}E-commerce{% endblock %}</title>
+{% block products %}
+<div class="card shadow-lg w-100" style="max-width: 650px;">
+        <!-- Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Shopping Assistant</h5>
+            <span class="badge bg-success">Online</span>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="chat-messages" class="card-body overflow-auto p-3" style="height: 400px; background-color: #f8f9fa;">
+            <div class="text-center text-muted small mb-3">Ask me anything to get started!</div>
+        </div>
+
+        <!-- Input Section -->
+            <div class="input-group">
+                <form method="POST">
+                    <input 
+                    type="text" 
+                    id="user-input" 
+                    class="form-control" 
+                    placeholder="Type your message..." 
+                    autocomplete="off"
+                    name="message"
+                >
+                <button class="btn btn-primary px-4" onclick="sendMessage()">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block pagination %}
+{% endblock %}
+{% block scripts %}
+<script>
+        function escapeHtml(text) {
+            return $('<div>').text(text).html();
+        }
+
+        function scrollToBottom() {
+            var chatMessages = $('#chat-messages');
+            chatMessages.scrollTop(chatMessages[0].scrollHeight);
+        }
+
+        function sendMessage() {
+            var userInput = $('#user-input').val();
+            if (userInput.trim() !== '') {
+                // User Message Bubble (Right aligned)
+                $('#chat-messages').append(`
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="chat-bubble bg-primary text-white p-2 px-3 rounded-3 shadow-sm">
+                            <small class="d-block text-white-50 fw-bold mb-1">You</small>
+                            ${escapeHtml(userInput)}
+                        </div>
+                    </div>
+                `);
+
+                $('#user-input').val('');
+                scrollToBottom();
+
+                // Send AJAX Request
+                $.ajax({
+                    url: '{% url "chat" %}',
+                    type: 'POST',
+                    data: {
+                        'message': userInput
+                    },
+                    success: function(response) {
+                        // AI Message Bubble (Left aligned)
+                        $('#chat-messages').append(`
+                            <div class="d-flex justify-content-start mb-3">
+                                <div class="chat-bubble bg-white text-dark border p-2 px-3 rounded-3 shadow-sm">
+                                    <small class="d-block text-muted fw-bold mb-1">AI</small>
+                                    ${escapeHtml(response.reply || response.message)}
+                                </div>
+                            </div>
+                        `);
+                        scrollToBottom();
+                    },
+                    error: function() {
+                        // Error Notification
+                        $('#chat-messages').append(`
+                            <div class="d-flex justify-content-start mb-3">
+                                <div class="chat-bubble bg-danger text-white p-2 px-3 rounded-3 shadow-sm">
+                                    <small class="d-block text-white-50 fw-bold mb-1">System</small>
+                                    Failed to get response. Please try again.
+                                </div>
+                            </div>
+                        `);
+                        scrollToBottom();
+                    }
+                });
+            }
+        }
+
+        $('#user-input').keypress(function(e) {
+            if (e.which == 13) {
+                sendMessage();
+            }
+        });
+    </script>
+{% endblock %}
