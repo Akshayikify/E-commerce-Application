@@ -162,6 +162,9 @@
                             <a href="{% url 'profile' %}"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</a>
                         </span>
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+                       <a href="{% url 'chat' %}" style="color: red;">
+                        <i class="fa-solid fa-comments"></i>Shopping Assistent
+                        </a>
                           
                     {% else %}
                         <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">Login</a>
@@ -246,7 +249,6 @@
                             </div>
                         </div>
                     {% endfor %}
-                    <a class="btn btn-primary" href="{% url 'chat' %}" role="button">Shopping Assistant</a>
                 </div>
             {% else %}
                 <div class="text-center py-5 text-muted">

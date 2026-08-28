@@ -652,7 +652,12 @@ def order_confirmation_mail(request, order_id):
         return HttpResponse(f"No email address found for customer of Order #{order.id}.", status=400)
     return HttpResponse(f"Order #{order.id} is not in a paid status (Current status: {order.status}).", status=400)
 
-client=OpenAI(api_key=settings.OPENAI_API_KEY, base_url="https://openrouter.ai")
+# OpenRouter exposes the OpenAI-compatible API under /api/v1. Its documented
+# compatible endpoint is Chat Completions, which returns message.content.
+client = OpenAI(
+    api_key=settings.OPENAI_API_KEY,
+    base_url="https://openrouter.ai/api/v1",
+)
 
 
 @csrf_exempt
@@ -669,13 +674,21 @@ def chat_view(request):
 
         try:
 
-            response = client.responses.create(
-                model='gpt-5-mini',
-                instructions='You are a helpful e-commerce assistant.',
-                input=user_message
+            response = client.chat.completions.create(
+                model='openai/gpt-5-mini',
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': 'You are a helpful e-commerce assistant.',
+                    },
+                    {'role': 'user', 'content': user_message},
+                ],
+                max_tokens=250
             )
 
-            ai_message = response.output_text
+            ai_message = response.choices[0].message.content
+            if not ai_message:
+                raise ValueError('The AI service returned an empty response.')
 
             return JsonResponse({
                 'message': ai_message

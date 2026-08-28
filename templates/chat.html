@@ -1,103 +1,197 @@
 {% extends 'home.html' %}
-<title>{% block title %}E-commerce{% endblock %}</title>
+
+<title>{% block title %}Shopping Assistant | E-commerce{% endblock %}</title>
+
 {% block products %}
-<div class="card shadow-lg w-100" style="max-width: 650px;">
+<div class="d-flex justify-content-center align-items-center py-4">
+    <div class="card border-0 shadow-lg rounded-4 w-100 overflow-hidden" style="max-width: 650px;">
         <!-- Header -->
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Shopping Assistant</h5>
-            <span class="badge bg-success">Online</span>
+        <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center border-0">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative">
+                    <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                        <i class="bi bi-robot fs-5"></i>
+                        <span>AI</span>
+                    </div>
+                    <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle">
+                        <span class="visually-hidden">Online</span>
+                    </span>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Shopping Assistant</h6>
+                    <small class="text-white-50">Always active to help you shop</small>
+                </div>
+            </div>
+            <button id="clear-chat" class="btn btn-sm btn-outline-light rounded-pill px-3" title="Clear Chat Window">
+                Clear
+            </button>
         </div>
 
         <!-- Chat Container -->
-        <div id="chat-messages" class="card-body overflow-auto p-3" style="height: 400px; background-color: #f8f9fa;">
-            <div class="text-center text-muted small mb-3">Ask me anything to get started!</div>
+        <div id="chat-messages" class="card-body overflow-auto p-4 d-flex flex-column gap-3" style="height: 440px; background-color: #f8f9fa;">
+            <div class="text-center my-2">
+                <span class="badge bg-light text-muted border px-3 py-2 rounded-pill fw-normal">
+                    Ask me anything about products, orders, or recommendations!
+                </span>
+            </div>
         </div>
 
         <!-- Input Section -->
-            <div class="input-group">
-                <form method="POST">
+        <div class="card-footer bg-white p-3 border-top-0">
+            <form id="chat-form" class="m-0" method="post">
+                {% csrf_token %}
+                <div class="input-group">
                     <input 
-                    type="text" 
-                    id="user-input" 
-                    class="form-control" 
-                    placeholder="Type your message..." 
-                    autocomplete="off"
-                    name="message"
-                >
-                <button class="btn btn-primary px-4" onclick="sendMessage()">Send</button>
-                </form>
-            </div>
+                        type="text" 
+                        id="user-input" 
+                        class="form-control border-end-0 bg-light py-2 px-3" 
+                        placeholder="Type your message..." 
+                        autocomplete="off"
+                        name="message"
+                        required
+                    >
+                    <button type="submit" id="send-btn" class="btn btn-primary px-4 fw-semibold">
+                        <span>Send</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}
-{% block pagination %}
-{% endblock %}
+
+{% block pagination %}{% endblock %}
+
 {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-        function escapeHtml(text) {
-            return $('<div>').text(text).html();
-        }
+    function escapeHtml(text) {
+        return $('<div>').text(text).html();
+    }
 
-        function scrollToBottom() {
-            var chatMessages = $('#chat-messages');
-            chatMessages.scrollTop(chatMessages[0].scrollHeight);
-        }
+    function scrollToBottom() {
+        var chatMessages = $('#chat-messages');
+        chatMessages.animate({ scrollTop: chatMessages[0].scrollHeight }, 300);
+    }
 
-        function sendMessage() {
-            var userInput = $('#user-input').val();
-            if (userInput.trim() !== '') {
-                // User Message Bubble (Right aligned)
-                $('#chat-messages').append(`
-                    <div class="d-flex justify-content-end mb-3">
-                        <div class="chat-bubble bg-primary text-white p-2 px-3 rounded-3 shadow-sm">
-                            <small class="d-block text-white-50 fw-bold mb-1">You</small>
-                            ${escapeHtml(userInput)}
-                        </div>
+    function showTypingIndicator() {
+        $('#chat-messages').append(`
+            <div id="typing-indicator" class="d-flex justify-content-start">
+                <div class="bg-white border text-muted p-3 rounded-4 shadow-sm" style="max-width: 80%;">
+                    <small class="d-block text-muted fw-bold mb-1" style="font-size: 0.75rem;">AI</small>
+                    <div class="d-flex align-items-center gap-1">
+                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                        <span class="small">Thinking...</span>
                     </div>
-                `);
+                </div>
+            </div>
+        `);
+        scrollToBottom();
+    }
 
-                $('#user-input').val('');
-                scrollToBottom();
+    function removeTypingIndicator() {
+        $('#typing-indicator').remove();
+    }
 
-                // Send AJAX Request
-                $.ajax({
-                    url: '{% url "chat" %}',
-                    type: 'POST',
-                    data: {
-                        'message': userInput
-                    },
-                    success: function(response) {
-                        // AI Message Bubble (Left aligned)
-                        $('#chat-messages').append(`
-                            <div class="d-flex justify-content-start mb-3">
-                                <div class="chat-bubble bg-white text-dark border p-2 px-3 rounded-3 shadow-sm">
-                                    <small class="d-block text-muted fw-bold mb-1">AI</small>
-                                    ${escapeHtml(response.reply || response.message)}
-                                </div>
-                            </div>
-                        `);
-                        scrollToBottom();
-                    },
-                    error: function() {
-                        // Error Notification
-                        $('#chat-messages').append(`
-                            <div class="d-flex justify-content-start mb-3">
-                                <div class="chat-bubble bg-danger text-white p-2 px-3 rounded-3 shadow-sm">
-                                    <small class="d-block text-white-50 fw-bold mb-1">System</small>
-                                    Failed to get response. Please try again.
-                                </div>
-                            </div>
-                        `);
-                        scrollToBottom();
-                    }
-                });
-            }
+    function sendMessage() {
+        var userInput = $('#user-input').val().trim();
+        if (userInput !== '') {
+            // Render User Bubble
+            $('#chat-messages').append(`
+                <div class="d-flex justify-content-end">
+                    <div class="bg-primary text-white p-3 rounded-4 shadow-sm" style="max-width: 80%; border-bottom-right-radius: 4px !important;">
+                        <small class="d-block text-white-50 fw-bold mb-1" style="font-size: 0.75rem;">You</small>
+                        <div class="text-break">${escapeHtml(userInput)}</div>
+                    </div>
+                </div>
+            `);
+
+            $('#user-input').val('');
+            scrollToBottom();
+            showTypingIndicator();
+
+            // Send AJAX Request with CSRF Token
+            $.ajax({
+    url: '{% url "chat" %}',
+    type: 'POST',
+
+    headers: {
+        'X-CSRFToken': $('input[name=csrfmiddlewaretoken]').val()
+    },
+
+    data: {
+        message: userInput
+    },
+
+    success: function(response) {
+
+        removeTypingIndicator();
+
+        var replyText = response.message;
+
+        $('#chat-messages').append(`
+            <div class="d-flex justify-content-start">
+                <div class="bg-white text-dark border p-3 rounded-4 shadow-sm"
+                     style="max-width: 80%; border-bottom-left-radius: 4px !important;">
+
+                    <small class="d-block text-primary fw-bold mb-1"
+                           style="font-size: 0.75rem;">
+                        AI Assistant
+                    </small>
+
+                    <div class="text-break">
+                        ${escapeHtml(replyText)}
+                    </div>
+
+                </div>
+            </div>
+        `);
+
+        scrollToBottom();
+    },
+
+    error: function(xhr) {
+
+        removeTypingIndicator();
+
+        console.log("Error:", xhr.responseText);
+
+        $('#chat-messages').append(`
+            <div class="d-flex justify-content-start">
+                <div class="bg-danger text-white p-3 rounded-4 shadow-sm"
+                     style="max-width: 80%;">
+
+                    <small class="d-block text-white-50 fw-bold mb-1">
+                        System Error
+                    </small>
+
+                    <div class="small">
+                        Failed to reach the assistant. Please try again.
+                    </div>
+
+                </div>
+            </div>
+        `);
+
+        scrollToBottom();
+    }
+});
         }
+    }
 
-        $('#user-input').keypress(function(e) {
-            if (e.which == 13) {
-                sendMessage();
-            }
-        });
-    </script>
+    $('#chat-form').on('submit', function(e) {
+        e.preventDefault();
+        sendMessage();
+    });
+
+    $('#clear-chat').on('click', function() {
+        $('#chat-messages').html(`
+            <div class="text-center my-2">
+                <span class="badge bg-light text-muted border px-3 py-2 rounded-pill fw-normal">
+                    Chat cleared. Ask me anything to get started!
+                </span>
+            </div>
+        `);
+    });
+</script>
 {% endblock %}
