@@ -71,16 +71,8 @@ def home(request):
     query=request.GET.get('q',"").strip()
     category_id=request.GET.get('category','').strip()
     products=Product.objects.annotate(avg_rating=Avg('ratings__rating')).order_by('id')
-    categories=Category.objects.all()
     if category_id:
         products=Product.objects.filter(category_id=category_id)
-    cart_item_count=0
-    if request.user.is_authenticated:
-        try:
-            profile=request.user.customer
-            cart_item_count=CartItem.objects.filter(cart__customer=profile).count()
-        except Exception:
-            profile=None
     if query:
         products=Product.objects.filter(
             Q(title__icontains=query.strip('s'))|
@@ -103,9 +95,7 @@ def home(request):
     context={
         'products':page_obj,
         'query': query,
-        'cart_item_count':cart_item_count,
         'page_obj': page_obj,
-        'categories':categories,
         'selected_category': category_id
         }
     return render(request,"home.html",context)
