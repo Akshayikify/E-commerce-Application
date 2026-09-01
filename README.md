@@ -167,6 +167,8 @@ sequenceDiagram
     end
 ```
 
+[Visualized ER diagram](https://miro.com/app/board/uXjVHR8FjBo=/?moveToWidget=3458764682282786316&cot=14)
+
 Required environment variables are loaded from `.env`:
 
 ```env
