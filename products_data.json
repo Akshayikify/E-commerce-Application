@@ -1,0 +1,397 @@
+[
+{
+  "model": "store.category",
+  "pk": 1,
+  "fields": {
+    "name": "Accessories & Shoes"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 2,
+  "fields": {
+    "name": "Electronics"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 3,
+  "fields": {
+    "name": "Home, Garden & Tools"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 4,
+  "fields": {
+    "name": "Beauty, Health & Personal Care"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 5,
+  "fields": {
+    "name": "Sports, Fitness & Outdoors"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 6,
+  "fields": {
+    "name": "Toys, Children & Baby"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 7,
+  "fields": {
+    "name": "Media & Entertainment"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 8,
+  "fields": {
+    "name": "Grocery, Food & Beverage"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 9,
+  "fields": {
+    "name": "Automotive & Parts"
+  }
+},
+{
+  "model": "store.category",
+  "pk": 10,
+  "fields": {
+    "name": "Digital Products & Services"
+  }
+},
+{
+  "model": "store.product",
+  "pk": 1,
+  "fields": {
+    "title": "Voyager M Running Shoes For Men",
+    "product_image": "products/Reebok_kHSThVd.webp",
+    "description": "REEBOK Voyager M Running Shoes For Men (Black , 9)",
+    "price": "400.00",
+    "category": 1,
+    "title_kn": "ವಾಯೇಜರ್ ಎಂ ಪುರುಷರಿಗಾಗಿ ಶೂಗಳನ್ನು ಓಡಿಸುತ್ತಿದ್ದಾರೆ",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 3,
+  "fields": {
+    "title": "ASUS ExpertBook P1",
+    "product_image": "products/ASUS_laptop_SYyJkjQ.webp",
+    "description": "ASUS ExpertBook P1 (i3 14th Gen) with 1 Yr ADP Intel Core 3 14th Gen 100U - (8 GB/512 GB SSD/Windows 11 Home) P1403CVA-S61821WS Thin and Light Laptop (14 Inch, Misty Grey, 1.40 kg, With MS Office)",
+    "price": "51350.00",
+    "category": 2,
+    "title_kn": "ASUS ExpertBook P1",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 4,
+  "fields": {
+    "title": "Lenovo IdeaPad Slim 3",
+    "product_image": "products/Lenovo_laptop_cy99IiW.webp",
+    "description": "Lenovo IdeaPad Slim 3 WUXGA IPS with 1Yr ADP Intel Core i5 13th Gen 13420H - (16 GB/512 GB SSD/Windows 11 Home) 15IRH10 Thin and Light Laptop (15.3 inch, Luna Grey, 1.59 Kg, With MS Office)",
+    "price": "49999.00",
+    "category": 2,
+    "title_kn": "ಲೆನೊವೊ ಐಡಿಯಾಪ್ಯಾಡ್ ಸ್ಲಿಮ್ 3",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 5,
+  "fields": {
+    "title": "Godreg Refrigerator",
+    "product_image": "products/Godreg_Ztx3Yj6.webp",
+    "description": "Godrej 223 L Frost Free Double Door 2 Star Refrigerator  with AI Powered 30 Days Farm Freshness Uniform 360 Cooling Inverter (Steel Glow, RF EON 244BN RI STEEL GLOW)",
+    "price": "35000.00",
+    "category": 3,
+    "title_kn": "ಗೋದ್ರೆಗ್ ರೆಫ್ರಿಜರೇಟರ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 6,
+  "fields": {
+    "title": "LG Air Conditioner",
+    "product_image": "products/LG_AC_HZsFqtj.webp",
+    "description": "Godrej 223 L Frost Free Double Door 2 Star Refrigerator  with AI Powered 30 Days Farm Freshness Uniform 360 Cooling Inverter (Steel Glow, RF EON 244BN RI STEEL GLOW)",
+    "price": "18000.00",
+    "category": 3,
+    "title_kn": "ಎಲ್‌ಜಿ ಏರ್ ಕಂಡೀಷನರ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 7,
+  "fields": {
+    "title": "HIMALAYA Anti-Hair Fall Shampoo",
+    "product_image": "products/Himalaya_shampoo_FfxnhOc.webp",
+    "description": "HIMALAYA Anti-Hair Fall Bhringaraja Shampoo (340 ml)",
+    "price": "190.00",
+    "category": 4,
+    "title_kn": "ಹಿಮಾಲಯ ಕೂದಲು ಉದುರುವಿಕೆ ವಿರೋಧಿ ಶಾಂಪೂ",
+    "stock": 38
+  }
+},
+{
+  "model": "store.product",
+  "pk": 8,
+  "fields": {
+    "title": "Pears Body Wash",
+    "product_image": "products/Pears_Body_wash_qf9TPIN.webp",
+    "description": "Pears 98% Pure Glycerin Soft & Fresh Glow Body Wash (250 ml)",
+    "price": "670.00",
+    "category": 4,
+    "title_kn": "ಪಿಯರ್ಸ್ ಬಾಡಿ ವಾಶ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 9,
+  "fields": {
+    "title": "METTLE Alpha whey protein",
+    "product_image": "products/whey-protein-alpha_6zDBK2c.webp",
+    "description": "METTLE Alpha whey protein Whey Protein (1 kg, Banana Delight)",
+    "price": "899.00",
+    "category": 5,
+    "title_kn": "ಮೆಟಲ್ ಆಲ್ಫಾ ವ್ಹೀ ಪ್ರೋಟೀನ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 10,
+  "fields": {
+    "title": "MOVEX Badminton Racket",
+    "product_image": "products/Morex_Badminton_Racket_ad2DZVM.webp",
+    "description": "MOVEX Morex Badminton Racket [ Set of 2 ] with Full Cover Bag for Beginners & Adults Yellow Strung Badminton Racquet (Pack of: 2, 200 g)",
+    "price": "339.00",
+    "category": 5,
+    "title_kn": "MOVEX ಬ್ಯಾಡ್ಮಿಂಟನ್ ರಾಕೆಟ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 11,
+  "fields": {
+    "title": "Gold Winner Refined Sunflower Oil",
+    "product_image": "products/sunflower-oil-gold-winner-_f93ycHX.webp",
+    "description": "Gold Winner Refined Sunflower Oil Sunflower Oil Pouch (910 g)",
+    "price": "300.00",
+    "category": 8,
+    "title_kn": "ಗೋಲ್ಡ್ ವಿನ್ನರ್ ರಿಫೈನ್ಡ್ ಸನ್‌ಫ್ಲವರ್ ಆಯಿಲ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 12,
+  "fields": {
+    "title": "Maggie Noodles",
+    "product_image": "products/instant-noodles-maggi-_cllDMRD.webp",
+    "description": "Maggi Pack of 12 Instant Noodles Vegetarian (840 g)",
+    "price": "38.00",
+    "category": 8,
+    "title_kn": "ಮ್ಯಾಗಿ ನೂಡಲ್ಸ್",
+    "stock": 47
+  }
+},
+{
+  "model": "store.product",
+  "pk": 13,
+  "fields": {
+    "title": "Aroma Pro Pods",
+    "product_image": "products/nb121-pro-pods_AjNTJQm.webp",
+    "description": "Aroma NB121 Pro Pods Upto 40 Hours Playtime* Type C Fast Charging Dual Pairing Earbuds Bluetooth Headset (Active BlacK, True Wireless)",
+    "price": "899.00",
+    "category": 10,
+    "title_kn": "ಅರೋಮಾ ಪ್ರೊ ಪಾಡ್‌ಗಳು",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 14,
+  "fields": {
+    "title": "ULTRA T900 Digital Watch",
+    "product_image": "products/ULTRA_T900_Digital_Watch_hL6UUje.webp",
+    "description": "ULTRA T900 Digital Watch  - For Boys & Girls 86",
+    "price": "1988.00",
+    "category": 10,
+    "title_kn": "ಅಲ್ಟ್ರಾ T900 ಡಿಜಿಟಲ್ ವಾಚ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 15,
+  "fields": {
+    "title": "TAPUJI Dancing Cactus",
+    "product_image": "products/dancing-cactus-repeats_tZhbYEI.webp",
+    "description": "TAPUJI Dancing Cactus Repeats What You Say,Electronic Plush Toy with Lighting,Singing Cactus Recording and Repeat Your Words for Education Toys (Green)",
+    "price": "200.00",
+    "category": 6,
+    "title_kn": "ತಪುಜಿ ಡ್ಯಾನ್ಸಿಂಗ್ ಕ್ಯಾಕ್ಟಸ್",
+    "stock": 50
+  }
+},
+{
+  "model": "store.product",
+  "pk": 16,
+  "fields": {
+    "title": "KOBBET Talking Tom Cat Toy",
+    "product_image": "products/talking-tom-cat-toy-for-kids_CyKAfYk.webp",
+    "description": "KOBBET Talking Tom Cat Toy for Kids Speaking Repeats What You Say - Best Gift set toys (Multicolor",
+    "price": "230.00",
+    "category": 6,
+    "title_kn": "KOBBET ಟಾಕಿಂಗ್ ಟಾಮ್ ಕ್ಯಾಟ್ ಟಾಯ್",
+    "stock": 0
+  }
+},
+{
+  "model": "store.product",
+  "pk": 18,
+  "fields": {
+    "title": "AutoBizarre 12 LED Multicolor Music",
+    "product_image": "products/12-led-multicolor-music-controlled-sound-activated-car-interior-original-imaf9_lLRoj3m.webp",
+    "description": "12 LED Multicolor Music Controlled Sound Activated Car Interior Atmosphere Light (works with all cars)",
+    "price": "303.00",
+    "category": 9,
+    "title_kn": "ಆಟೋಬೈಜರ್ 12 ಎಲ್ಇಡಿ ಮಲ್ಟಿಕಲರ್ ಮ್ಯೂಸಿಕ್",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 19,
+  "fields": {
+    "title": "DASTVAM 100PC Car Bumper Clips",
+    "product_image": "products/180-100pc-car-bumper-clips-5-pc-universal-car-door-trim-panel-original-imahmb5_6DoYIxd.webp",
+    "description": "DASTVAM 100PC Car Bumper Clips & 5 pc Universal Car Door Trim Panel Clip Removal Tool Vehicle Tool Kit",
+    "price": "357.00",
+    "category": 9,
+    "title_kn": "ದಾಸ್ತವಾಮ್ 100ಪಿಸಿ ಕಾರ್ ಬಂಪರ್ ಕ್ಲಿಪ್‌ಗಳು",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 20,
+  "fields": {
+    "title": "Nutraj Special Nuts (Kaju) W320 Cashews (1 x 500 g)",
+    "product_image": "products/500-special-nuts-kaju-w320-1-pouch-nutraj-enriched-transparent-original-imahft_QPcVwLn.webp",
+    "description": "Nutraj Special Nuts (Kaju) W320 Cashews (1 x 500 g)",
+    "price": "664.00",
+    "category": 8,
+    "title_kn": "ನ್ಯೂಟ್ರಾಜ್ ಸ್ಪೆಷಲ್ ನಟ್ಸ್ (ಕಾಜು) ಡಬ್ಲ್ಯು 320 ಗೋಡಂಬಿ (1 x 500 ಗ್ರಾಂ)",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 21,
+  "fields": {
+    "title": "DAILYHERBS Premium Dried Afghani Anjeer/ Figs",
+    "product_image": "products/250-premium-dried-afghani-anjeer-figs-fresh-dried-anjeer-1-mason-original-imah_B3y8AOj.webp",
+    "description": "DAILYHERBS Premium Dried Afghani Anjeer/ Figs | Fresh Dried Anjeer | Figs (1 x 250 g)",
+    "price": "150.00",
+    "category": 8,
+    "title_kn": "ಡೈಲಿಹರ್ಬ್ಸ್ ಪ್ರೀಮಿಯಂ ಒಣಗಿದ ಅಫ್ಘಾನಿ ಅಂಜೀರ್/ ಅಂಜಲಿಗಳು",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 22,
+  "fields": {
+    "title": "LIVYOR Premium Dried Kiwi",
+    "product_image": "products/1-premium-dried-kiwi-dry-fruits-1-pouch-livyor-original-imahqndqcg6xhr6x_zjrOo1l.webp",
+    "description": "LIVYOR Premium Dried Kiwi | Dry Fruits Kiwi (1 x 1 kg)",
+    "price": "640.00",
+    "category": 8,
+    "title_kn": "ಲೈವ್‌ಯೋರ್ ಪ್ರೀಮಿಯಂ ಡ್ರೈಡ್ ಕಿವಿ",
+    "stock": 45
+  }
+},
+{
+  "model": "store.product",
+  "pk": 23,
+  "fields": {
+    "title": "Platinum California Almonds (1 x 250 g)",
+    "product_image": "products/500-platinum-california-raw-almonds-500g-1-pouch-wonderland-original-imah9r3gw_8CabIOd.webp",
+    "description": "WONDERLAND Foods Hand Picked Platinum California Almonds (1 x 250 g)",
+    "price": "397.00",
+    "category": 8,
+    "title_kn": "ಪ್ಲಾಟಿನಂ ಕ್ಯಾಲಿಫೋರ್ನಿಯಾ ಬಾದಾಮಿ (1 x 250 ಗ್ರಾಂ)",
+    "stock": 55
+  }
+},
+{
+  "model": "store.product",
+  "pk": 24,
+  "fields": {
+    "title": "CANNY Button Mushroom",
+    "product_image": "products/800-button-mushroom-regular-rich-taste-for-gravies-dishes-800-gm-original-imah_hXSanaX.webp",
+    "description": "CANNY Button Mushroom Regular Rich Taste For Gravies & Dishes - 800 Gm Pack of 1 Mushroom (800 g)",
+    "price": "180.00",
+    "category": 8,
+    "title_kn": "ಕ್ಯಾನಿ ಬಟನ್ ಮಶ್ರೂಮ್",
+    "stock": 56
+  }
+},
+{
+  "model": "store.product",
+  "pk": 25,
+  "fields": {
+    "title": "Yummients Canned Chickpeas",
+    "product_image": "products/450-canned-chickpeas-ready-to-cook-boiled-kabuli-chana-450g-tin-original-imahe_u03wq33.webp",
+    "description": "Yummients Canned Chickpeas | Ready to Cook | Boiled Kabuli Chana | 450g Tin Beans (450 g, Pack of 3)",
+    "price": "180.00",
+    "category": 8,
+    "title_kn": "ಯಮ್ಮಿಯಂಟ್‌ಗಳ ಪೂರ್ವಸಿದ್ಧ ಕಡಲೆಕಾಯಿ",
+    "stock": 80
+  }
+},
+{
+  "model": "store.product",
+  "pk": 26,
+  "fields": {
+    "title": "Indidoz Shahi Paneer",
+    "product_image": "products/300-shahi-paneer-serves-2-ready-meals-300-g-1-indidoz-original-imahq4qgvdhzh4d_VG09cDU.webp",
+    "description": "Indidoz Shahi Paneer | Serves 2 | Ready Meals (300 g) (300 g)",
+    "price": "118.00",
+    "category": 8,
+    "title_kn": "ಇಂಡಿಡೋಜ್ ಶಾಹಿ ಪನೀರ್",
+    "stock": 85
+  }
+},
+{
+  "model": "store.product",
+  "pk": 27,
+  "fields": {
+    "title": "Millex Millet",
+    "product_image": "products/800-millet-health-drink-mix-with-churnam-30-natural-nutritions-original-imahzj_wu2Pc6g.webp",
+    "description": "Millex Millet Health Drink Mix With Churnam|30 Natural Nutritions & 18 Herbs 800 g",
+    "price": "178.00",
+    "category": 8,
+    "title_kn": "ಮಿಲ್ಲೆಕ್ಸ್ ಮಿಲ್ಲೆಟ್",
+    "stock": 78
+  }
+}
+]
