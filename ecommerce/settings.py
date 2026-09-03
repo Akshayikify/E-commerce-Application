@@ -168,6 +168,7 @@ OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Modern Django 4.2+ storage configuration
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -176,6 +177,9 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+# Backward-compat shim for dj3-cloudinary-storage which reads this directly
+STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
