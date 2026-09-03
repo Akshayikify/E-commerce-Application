@@ -45,8 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
+    # Note: 'cloudinary_storage' intentionally NOT listed here.
+    # Its AppConfig.ready() auto-configures cloudinary but also registers a
+    # broken collectstatic override that corrupts whitenoise file collection.
+    # We configure cloudinary explicitly at the bottom of this file instead.
     'cloudinary',
     'store',
     'phonenumber_field',
@@ -180,9 +183,17 @@ STORAGES = {
     },
 }
 
-# Backward-compat shim for dj3-cloudinary-storage which reads this directly
-STATICFILES_STORAGE = STORAGES["staticfiles"]["BACKEND"]
+# Explicit cloudinary configuration (normally done by cloudinary_storage AppConfig.ready(),
+# but we removed cloudinary_storage from INSTALLED_APPS to avoid its broken collectstatic).
+import cloudinary
+cloudinary.config(
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+)
 
+# Keep this dict so cloudinary_storage.storage.MediaCloudinaryStorage can still
+# read config via settings.CLOUDINARY_STORAGE if needed internally.
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
